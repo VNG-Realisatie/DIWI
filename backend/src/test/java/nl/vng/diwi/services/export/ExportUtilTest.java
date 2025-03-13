@@ -1,4 +1,4 @@
-package nl.vng.diwi.services.export.zuidholland;
+package nl.vng.diwi.services.export;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,10 +12,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.services.DataExchangeExportError;
-import nl.vng.diwi.services.export.ExportUtil;
-import nl.vng.diwi.services.export.OwnershipCategory;
+import nl.vng.diwi.services.export.zuidholland.ZuidHollandConstants;
 
-public class EsriZuidHollandHouseblockExportModelTest {
+public class ExportUtilTest {
     private static Stream<Arguments> ranges() {
         return Stream.of(
             Arguments.of(OwnershipType.KOOPWONING, null, null, OwnershipCategory.koop_onb),

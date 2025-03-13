@@ -43,9 +43,9 @@ import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategoryPeriod;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.TemplateProperty;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
@@ -133,7 +133,7 @@ public class GdbGelderlandExport {
             List<PropertyModel> customProps,
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
             LocalDate exportDate,
-            Confidentiality minConfidentiality,
+            DataExchangeTemplate template,
             List<DataExchangeExportError> errors,
             LoggedUser user) {
         FeatureCollection exportObject = new FeatureCollection();
@@ -152,8 +152,6 @@ public class GdbGelderlandExport {
 
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
-        int i = 0;
-
         try {
             var tempDir = Files.createTempDirectory("GdbGelderlandExport");
             var csvFile = new File(tempDir.toFile(), "DetailPlanning.csv");
@@ -162,13 +160,14 @@ public class GdbGelderlandExport {
                 writer.printRecord(Arrays.asList(GelderlandConstants.DetailPlanningHeaders.values()));
 
                 for (var project : projects) {
-                    ProjectExportData projectExportData = getProjectFeature(project,
+                    ProjectExportData projectExportData = getProjectFeature(
+                            project,
                             customPropsMap,
                             priceRangeBuyFixedProp,
                             priceRangeRentFixedProp,
                             municipalityFixedProp,
                             dxPropertiesMap,
-                            minConfidentiality,
+                            template,
                             exportDate,
                             errors,
                             targetCrs,
@@ -206,7 +205,7 @@ public class GdbGelderlandExport {
             PropertyModel priceRangeRentFixedProp,
             PropertyModel municipalityFixedProp,
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
-            Confidentiality minConfidentiality,
+            DataExchangeTemplate template,
             LocalDate exportDate,
             List<DataExchangeExportError> errors,
             String targetCrs,
@@ -233,7 +232,7 @@ public class GdbGelderlandExport {
         feature.setProperty("oplevering_eerste", getFirstDelivery(project));
         feature.setProperty("oplevering_laatste", getLastDelivery(project));
         feature.setProperty("plantype", mapPlanType(project.getPlanType()));
-        feature.setProperty("projectfase", mapProjectPhase(project.getProjectPhase()));
+        feature.setProperty("projectfase", mapProjectPhase(project, exportDate));
         feature.setProperty("status_planologisch", mapPlanStatus(project.getPlanningPlanStatus()));
 
         feature.setProperty("koppelid", project.getProjectId());
@@ -246,6 +245,7 @@ public class GdbGelderlandExport {
                 priceRangeBuyFixedProp,
                 priceRangeRentFixedProp,
                 detailYearMap,
+                template,
                 errors);
 
         // Add project level sums to object
@@ -288,8 +288,18 @@ public class GdbGelderlandExport {
         }
 
         // Add detail planning pzh style
-        List<GdbGelderlandHouseblockExportModel> houseblockExportModels = project.getHouseblocks().stream()
-                .map(h -> new GdbGelderlandHouseblockExportModel(project.getProjectId(), h, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors)).toList();
+        List<GdbGelderlandHouseblockExportModel> houseblockExportModels = project
+                .getHouseblocks()
+                .stream()
+                .map(h -> new GdbGelderlandHouseblockExportModel(
+                        project.getProjectId(),
+                        h,
+                        priceRangeBuyFixedProp,
+                        priceRangeRentFixedProp,
+                        template,
+                        errors))
+                .toList();
+
         List<Map<String, Object>> houseblockProperties = getHouseblockProperties(houseblockExportModels);
 
         for (var ba : houseblockProperties) {
@@ -320,6 +330,7 @@ public class GdbGelderlandExport {
             PropertyModel priceRangeBuyFixedProp,
             PropertyModel priceRangeRentFixedProp,
             Map<Integer, Map<String, Object>> detailYearMap,
+            DataExchangeTemplate template,
             List<DataExchangeExportError> errors) {
         int Totaal_aantal_huurwoningen_corporatie = 0;
         int Totaal_bouw = 0;
@@ -384,6 +395,13 @@ public class GdbGelderlandExport {
             int huur_resterend = 0;
             int koop_resterend = 0;
 
+            // This assumes the periods are ordered from old to new
+            var priceCategoriesForPeriod = template.getPriceCategoryPeriods()
+                    .stream()
+                    .filter(pcp -> pcp.getValidUntil() == null || pcp.getValidUntil().isAfter(b.getEndDate()))
+                    .findFirst()
+                    .orElseThrow();
+
             // totals for ownership
             for (var o : b.getOwnershipValueList()) {
                 var model = createOwnershipValueModel(
@@ -392,7 +410,7 @@ public class GdbGelderlandExport {
                         priceRangeBuyFixedProp,
                         priceRangeRentFixedProp,
                         errors,
-                        GelderlandConstants.priceRangeMap,
+                        priceCategoriesForPeriod,
                         o);
 
                 switch (model.getOwnershipCategory()) {
@@ -412,8 +430,7 @@ public class GdbGelderlandExport {
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
                     Totaal_aantal_huurwoningen_corporatie += o.getOwnershipAmount();
 
-                    if (model.getOwnershipCategory() == OwnershipCategory.huur2 ||
-                            model.getOwnershipCategory() == OwnershipCategory.huur3) {
+                    if (model.getOwnershipCategory() == OwnershipCategory.huur3) {
                         aantal_middenhuur_corporatie += bouwFactor * model.getAmount();
                     }
                 }
@@ -492,7 +509,12 @@ public class GdbGelderlandExport {
         };
     }
 
-    private static String mapProjectPhase(ProjectPhase projectPhase) {
+    private static String mapProjectPhase(ProjectExportSqlModelExtended project, LocalDate exportDate) {
+        var projectPhase = project.getProjectPhase();
+        if (project.getEndDate().isBefore(exportDate)) {
+            return "7. Afgerond";
+        }
+
         if (projectPhase == null) {
             return null;
         }
@@ -503,7 +525,6 @@ public class GdbGelderlandExport {
         case _5_PREPARATION -> "4. Voorbereiding";
         case _6_REALIZATION -> "5. Realisatie";
         case _7_AFTERCARE -> "6. Nazorg";
-        // case -> "7. Afgerond"; // TODO can we find this another way?
         case _1_CONCEPT -> "Onbekend";
         };
     }
@@ -549,7 +570,7 @@ public class GdbGelderlandExport {
             PropertyModel priceRangeBuyFixedProp,
             PropertyModel priceRangeRentFixedProp,
             List<DataExchangeExportError> errors,
-            Map<OwnershipCategory, Long> priceCategoryMap,
+            PriceCategoryPeriod pcp,
             ProjectExportSqlModelExtended.OwnershipValueSqlModel o) {
         OwnershipValueModel oModel = new OwnershipValueModel();
         oModel.setOwnershipType(o.getOwnershipType());
@@ -557,7 +578,7 @@ public class GdbGelderlandExport {
         if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
             if (o.getOwnershipValue() != null) {
                 oModel.setOwnershipCategory(
-                        getOwnershipCategory(o.getOwnershipType(), o.getOwnershipValue(), priceCategoryMap));
+                        getOwnershipCategory(o.getOwnershipType(), o.getOwnershipValue(), pcp));
             } else if (o.getOwnershipValueRangeMin() != null) {
                 oModel.setOwnershipCategory(ExportUtil.getOwnershipCategory(
                         projectUuid,
@@ -565,7 +586,7 @@ public class GdbGelderlandExport {
                         o.getOwnershipType(),
                         o.getOwnershipValueRangeMin(),
                         o.getOwnershipValueRangeMax(),
-                        priceCategoryMap,
+                        pcp,
                         errors));
             } else if (o.getOwnershipRangeCategoryId() != null) {
                 RangeSelectDisabledModel rangeOption = priceRangeBuyFixedProp.getRanges().stream()
@@ -581,7 +602,7 @@ public class GdbGelderlandExport {
                             o.getOwnershipType(),
                             rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),
                             rangeOption.getMax() == null ? null : rangeOption.getMax().longValue(),
-                            priceCategoryMap,
+                            pcp,
                             errors));
                 }
             } else {
@@ -589,7 +610,7 @@ public class GdbGelderlandExport {
             }
         } else {
             if (o.getOwnershipRentalValue() != null) {
-                oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue(), priceCategoryMap));
+                oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue(), pcp));
             } else if (o.getOwnershipRentalValueRangeMin() != null) {
                 oModel.setOwnershipCategory(
                         ExportUtil.getOwnershipCategory(
@@ -598,7 +619,7 @@ public class GdbGelderlandExport {
                                 o.getOwnershipType(),
                                 o.getOwnershipRentalValueRangeMin(),
                                 o.getOwnershipRentalValueRangeMax(),
-                                priceCategoryMap,
+                                pcp,
                                 errors));
             } else if (o.getOwnershipRentalRangeCategoryId() != null) {
                 RangeSelectDisabledModel rangeOption = priceRangeRentFixedProp.getRanges().stream()
@@ -614,7 +635,7 @@ public class GdbGelderlandExport {
                                     o.getOwnershipType(),
                                     rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),
                                     rangeOption.getMax() == null ? null : rangeOption.getMax().longValue(),
-                                    priceCategoryMap,
+                                    pcp,
                                     errors));
                 }
             } else {

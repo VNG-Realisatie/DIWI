@@ -40,7 +40,6 @@ import nl.vng.diwi.models.DataExchangePropertyModel.DataExchangePropertyModelBui
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
-import nl.vng.diwi.services.export.OwnershipCategory;
 import nl.vng.diwi.testutil.ProjectsUtil;
 
 public class GdbGelderlandExportTest {
@@ -48,7 +47,6 @@ public class GdbGelderlandExportTest {
     void createGdb() throws Exception {
         // Some constants
         LocalDate exportDate = LocalDate.of(2025, 3, 2); // Same as middle house block so we have future and past blocks
-        Confidentiality minConfidentiality = Confidentiality.EXTERNAL_REGIONAL;
         LoggedUser user = LoggedUser.builder()
                 .firstName("first")
                 .lastName("last")
@@ -79,6 +77,7 @@ public class GdbGelderlandExportTest {
                 .name("project name")
                 .creation_date(LocalDate.of(2025, 1, 1))
                 .last_edit_date(LocalDate.of(2025, 2, 1))
+                .endDate(LocalDate.of(2025, 12, 1))
                 .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
                 .projectPhase(ProjectPhase._5_PREPARATION)
@@ -126,7 +125,14 @@ public class GdbGelderlandExportTest {
 
         List<DataExchangeExportError> errors = new ArrayList<>();
 
-        var result = GdbGelderlandExport.buildExportObject(List.of(project), customProps, dxPropertiesMap, exportDate, minConfidentiality, errors, user);
+        var result = GdbGelderlandExport.buildExportObject(
+                List.of(project),
+                customProps,
+                dxPropertiesMap,
+                exportDate,
+                DataExchangeTemplate.gelderlandTemplate,
+                errors,
+                user);
 
         File outputFile = new File("src/test/resources/GdbGelderlandTest/result.gdb.zip");
         try (FileOutputStream output = new FileOutputStream(outputFile)) {
@@ -152,7 +158,6 @@ public class GdbGelderlandExportTest {
     void testGetProjectFeature() throws Exception {
         // Some constants
         LocalDate exportDate = LocalDate.of(2025, 3, 2); // Same as middle house block so we have future and past blocks
-        Confidentiality minConfidentiality = Confidentiality.EXTERNAL_REGIONAL;
         String targetCrs = "EPSG:28992";
         LoggedUser user = LoggedUser.builder()
                 .firstName("first")
@@ -184,6 +189,7 @@ public class GdbGelderlandExportTest {
                 .name("project name")
                 .creation_date(LocalDate.of(2025, 1, 1))
                 .last_edit_date(LocalDate.of(2025, 2, 1))
+                .endDate(LocalDate.of(2025, 12, 1))
                 .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
                 .projectPhase(ProjectPhase._5_PREPARATION)
@@ -209,18 +215,18 @@ public class GdbGelderlandExportTest {
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
-                                                .ownershipRentalValueRangeMin(GelderlandConstants.priceRangeMap.get(OwnershipCategory.huur4))
+                                                .ownershipRentalValueRangeMin(500_000_00l)
                                                 .build(),
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
-                                                .ownershipRentalValueRangeMax(100l)
+                                                .ownershipRentalValueRangeMax(100_00l)
                                                 .build(),
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
-                                                .ownershipRentalValueRangeMin(100l)
-                                                .ownershipRentalValueRangeMax(120l)
+                                                .ownershipRentalValueRangeMin(100_00l)
+                                                .ownershipRentalValueRangeMax(120_00l)
                                                 .build()))
                                 .meergezinswoning(4)
                                 .eengezinswoning(0)
@@ -294,7 +300,7 @@ public class GdbGelderlandExportTest {
                 priceRangeRentFixedProp,
                 municipalityFixedProp,
                 dxPropertiesMap,
-                minConfidentiality,
+                DataExchangeTemplate.gelderlandTemplate,
                 exportDate,
                 errors,
                 targetCrs,

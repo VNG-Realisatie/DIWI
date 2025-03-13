@@ -58,6 +58,9 @@ export interface paths {
     "/rest/dataexchange/{id}/export": {
         post: operations["exportProjects"];
     };
+    "/rest/dataexchange/templates": {
+        get: operations["getTemplates"];
+    };
     "/rest/dataexchange/types": {
         get: operations["getTypes"];
     };
@@ -348,6 +351,41 @@ export interface components {
             filename?: string;
             username?: string;
             confidentialityLevelsAsStrings?: string[];
+        };
+        DataExchangeTemplate: {
+            properties?: components["schemas"]["TemplateProperty"][];
+            /** @enum {string} */
+            minimumConfidentiality?:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
+            fileExtension?: string;
+            priceCategoryPeriods?: components["schemas"]["PriceCategoryPeriod"][];
+        };
+        PriceCategory: {
+            /** @enum {string} */
+            category?: "koop1" | "koop2" | "koop3" | "koop4" | "koop_onb" | "huur1" | "huur2" | "huur3" | "huur4" | "huur_onb";
+            /** Format: int64 */
+            maxValue?: number;
+        };
+        PriceCategoryPeriod: {
+            /** Format: date */
+            validUntil?: string;
+            categoriesBuy?: components["schemas"]["PriceCategory"][];
+            categoriesRent?: components["schemas"]["PriceCategory"][];
+        };
+        TemplateProperty: {
+            name?: string;
+            /** @enum {string} */
+            objectType?: "PROJECT" | "WONINGBLOK";
+            propertyTypes?: ("BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY")[];
+            mandatory?: boolean;
+            singleSelect?: boolean;
+            options?: string[];
         };
         GeographyOptionModel: {
             brkGemeenteCode?: string;
@@ -1201,6 +1239,18 @@ export interface operations {
             default: {
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    getTemplates: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["DataExchangeTemplate"];
+                    };
                 };
             };
         };

@@ -21,6 +21,7 @@ import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchangeType;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.DataExchangeModel;
@@ -35,6 +36,7 @@ import nl.vng.diwi.services.DataExchangeService;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Path("/dataexchange")
@@ -69,6 +71,14 @@ public class DataExchangeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<DataExchangeType> getTypes() {
         return List.of(DataExchangeType.values());
+    }
+
+    @GET
+    @Path("/templates")
+    @RolesAllowed(UserActionConstants.VIEW_DATA_EXCHANGES)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<DataExchangeType, DataExchangeTemplate> getTemplates() {
+        return DataExchangeTemplate.templates;
     }
 
     @GET

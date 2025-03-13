@@ -548,6 +548,26 @@
         }
       }
     },
+    "/rest/dataexchange/templates": {
+      "get": {
+        "operationId": "getTemplates",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/DataExchangeTemplate"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/rest/dataexchange/types": {
       "get": {
         "operationId": "getTypes",
@@ -2427,6 +2447,95 @@
             "type": "string"
           },
           "confidentialityLevelsAsStrings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "DataExchangeTemplate": {
+        "type": "object",
+        "properties": {
+          "properties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TemplateProperty"
+            }
+          },
+          "minimumConfidentiality": {
+            "type": "string",
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
+          },
+          "fileExtension": {
+            "type": "string"
+          },
+          "priceCategoryPeriods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceCategoryPeriod"
+            }
+          }
+        }
+      },
+      "PriceCategory": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["koop1", "koop2", "koop3", "koop4", "koop_onb", "huur1", "huur2", "huur3", "huur4", "huur_onb"]
+          },
+          "maxValue": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PriceCategoryPeriod": {
+        "type": "object",
+        "properties": {
+          "validUntil": {
+            "type": "string",
+            "format": "date"
+          },
+          "categoriesBuy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceCategory"
+            }
+          },
+          "categoriesRent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceCategory"
+            }
+          }
+        }
+      },
+      "TemplateProperty": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "objectType": {
+            "type": "string",
+            "enum": ["PROJECT", "WONINGBLOK"]
+          },
+          "propertyTypes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT", "RANGE_CATEGORY"]
+            }
+          },
+          "mandatory": {
+            "type": "boolean"
+          },
+          "singleSelect": {
+            "type": "boolean"
+          },
+          "options": {
             "type": "array",
             "items": {
               "type": "string"
