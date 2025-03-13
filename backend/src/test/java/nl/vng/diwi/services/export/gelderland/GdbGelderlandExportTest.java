@@ -298,7 +298,6 @@ public class GdbGelderlandExportTest {
                 exportDate,
                 errors,
                 targetCrs,
-                17,
                 user);
 
         assertThat(errors).isEmpty();
