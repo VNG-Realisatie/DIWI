@@ -17,6 +17,7 @@ import org.locationtech.proj4j.ProjCoordinate;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategory;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategoryPeriod;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.services.DataExchangeExportError;
@@ -156,19 +157,18 @@ public class ExportUtil {
             Long priceValue,
             PriceCategoryPeriod pcp) {
         if (ownershipType == OwnershipType.KOOPWONING) {
-            return getOwnershipCategoryFromList(priceValue, pcp, OwnershipCategory.koop_onb);
+            return getOwnershipCategoryFromList(priceValue, pcp.getCategoriesBuy(), OwnershipCategory.koop_onb);
         } else {
-            return getOwnershipCategoryFromList(priceValue, pcp, OwnershipCategory.huur_onb);
+            return getOwnershipCategoryFromList(priceValue, pcp.getCategoriesRent(), OwnershipCategory.huur_onb);
         }
     }
 
-    private static OwnershipCategory getOwnershipCategoryFromList(Long priceValue, PriceCategoryPeriod pcp, OwnershipCategory unknownCategory) {
+    private static OwnershipCategory getOwnershipCategoryFromList(Long priceValue, List<PriceCategory> categoryList, OwnershipCategory unknownCategory) {
         if (priceValue == null) {
             return unknownCategory;
         }
 
-        var cats = pcp.getCategoriesRent();
-        for (var cat : cats) {
+        for (var cat : categoryList) {
             if (cat.getMaxValue() == null) {
                 return cat.getCategory();
             }
