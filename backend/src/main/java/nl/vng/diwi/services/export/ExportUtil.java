@@ -156,36 +156,27 @@ public class ExportUtil {
             Long priceValue,
             PriceCategoryPeriod pcp) {
         if (ownershipType == OwnershipType.KOOPWONING) {
-            if (priceValue == null) {
-                return OwnershipCategory.koop_onb;
-            }
-            var cats = pcp.getCategoriesBuy();
-            for (var cat : cats) {
-
-                if (cat.getMaxValue() == null) {
-                    return cat.getCategory();
-                }
-                if (cat.getMaxValue() >= priceValue) {
-                    return cat.getCategory();
-                }
-            }
-            return OwnershipCategory.koop_onb;
+            return getOwnershipCategoryFromList(priceValue, pcp, OwnershipCategory.koop_onb);
         } else {
-            if (priceValue == null) {
-                return OwnershipCategory.huur_onb;
-            }
-
-            var cats = pcp.getCategoriesRent();
-            for (var cat : cats) {
-                if (cat.getMaxValue() == null) {
-                    return cat.getCategory();
-                }
-                if (cat.getMaxValue() >= priceValue) {
-                    return cat.getCategory();
-                }
-            }
-            return OwnershipCategory.huur_onb;
+            return getOwnershipCategoryFromList(priceValue, pcp, OwnershipCategory.huur_onb);
         }
+    }
+
+    private static OwnershipCategory getOwnershipCategoryFromList(Long priceValue, PriceCategoryPeriod pcp, OwnershipCategory unknownCategory) {
+        if (priceValue == null) {
+            return unknownCategory;
+        }
+
+        var cats = pcp.getCategoriesRent();
+        for (var cat : cats) {
+            if (cat.getMaxValue() == null) {
+                return cat.getCategory();
+            }
+            if (cat.getMaxValue() >= priceValue) {
+                return cat.getCategory();
+            }
+        }
+        return unknownCategory;
     }
 
     public static OwnershipCategory getOwnershipCategory(
