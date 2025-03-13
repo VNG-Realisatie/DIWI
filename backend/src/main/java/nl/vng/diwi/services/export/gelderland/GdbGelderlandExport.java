@@ -430,8 +430,7 @@ public class GdbGelderlandExport {
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
                     Totaal_aantal_huurwoningen_corporatie += o.getOwnershipAmount();
 
-                    if (model.getOwnershipCategory() == OwnershipCategory.huur2 ||
-                            model.getOwnershipCategory() == OwnershipCategory.huur3) {
+                    if (model.getOwnershipCategory() == OwnershipCategory.huur3) {
                         aantal_middenhuur_corporatie += bouwFactor * model.getAmount();
                     }
                 }
