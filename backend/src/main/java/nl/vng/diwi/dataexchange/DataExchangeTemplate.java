@@ -213,36 +213,13 @@ public class DataExchangeTemplate {
                         new PriceCategoryPeriod(
                                 null,
                                 List.of(
-                                        new PriceCategory(OwnershipCategory.koop2, 390_000_00l),
+                                        new PriceCategory(OwnershipCategory.koop2, 405_000_00l),
                                         new PriceCategory(OwnershipCategory.koop4, null)),
                                 List.of(
-                                        new PriceCategory(OwnershipCategory.huur2, 879_66l),
-                                        new PriceCategory(OwnershipCategory.huur3, 1_158_00l),
+                                        new PriceCategory(OwnershipCategory.huur1, 731_00l),
+                                        new PriceCategory(OwnershipCategory.huur2, 900_07l),
+                                        new PriceCategory(OwnershipCategory.huur3, 1_185_00l),
                                         new PriceCategory(OwnershipCategory.huur4, null)))))
-
-                // There will be multiple price categories for different periods in the future.
-                // This will probable cause issues when exporting, switch to different price categories later.
-                //
-                // new PriceCategoryPeriod(
-                // LocalDate.of(2024, 12, 31),
-                // List.of(
-                // new PriceCategory(OwnershipCategory.huur1, 697_00l),
-                // new PriceCategory(OwnershipCategory.huur2, 880_00l),
-                // new PriceCategory(OwnershipCategory.huur3, 1_158_00l),
-                // new PriceCategory(OwnershipCategory.huur4, null)),
-                // List.of(
-                // new PriceCategory(OwnershipCategory.koop2, 390_000_00l),
-                // new PriceCategory(OwnershipCategory.koop4, null))),
-                // new PriceCategoryPeriod(
-                // null,
-                // List.of(
-                // new PriceCategory(OwnershipCategory.huur1, 731_00l),
-                // new PriceCategory(OwnershipCategory.huur2, 900_00l),
-                // new PriceCategory(OwnershipCategory.huur3, 1_185_00l),
-                // new PriceCategory(OwnershipCategory.huur4, null)),
-                // List.of(
-                // new PriceCategory(OwnershipCategory.koop2, 405_000_00l),
-                // new PriceCategory(OwnershipCategory.koop4, null)))))
                 .properties(ImmutableList.<TemplateProperty>builder()
                         .add(TemplateProperty.builder()
                                 .name("gemeente")

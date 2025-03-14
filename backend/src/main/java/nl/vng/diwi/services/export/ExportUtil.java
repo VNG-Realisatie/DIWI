@@ -201,7 +201,13 @@ public class ExportUtil {
                 cat2 == OwnershipCategory.huur_onb) {
             return cat1;
         } else {
-            errors.add(new DataExchangeExportError(projectUuid, houseblockUuid, EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR, cat1, cat2, priceValueMin,
+            errors.add(new DataExchangeExportError(
+                    projectUuid,
+                    houseblockUuid,
+                    EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR,
+                    cat1,
+                    cat2,
+                    priceValueMin,
                     priceValueMax));
             return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.koop_onb : OwnershipCategory.huur_onb;
         }
