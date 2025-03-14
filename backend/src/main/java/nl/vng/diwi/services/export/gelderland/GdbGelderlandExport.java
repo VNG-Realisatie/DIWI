@@ -579,8 +579,8 @@ public class GdbGelderlandExport {
             if (o.getOwnershipValue() != null) {
                 oModel.setOwnershipCategory(
                         getOwnershipCategory(o.getOwnershipType(), o.getOwnershipValue(), pcp));
-            } else if (o.getOwnershipValueRangeMin() != null) {
-                oModel.setOwnershipCategory(ExportUtil.getOwnershipCategory(
+            } else if (o.getOwnershipValueRangeMin() != null || o.getOwnershipValueRangeMax() != null) {
+                oModel.setOwnershipCategory(getOwnershipCategory(
                         projectUuid,
                         sqlModel.getHouseblockId(),
                         o.getOwnershipType(),
@@ -596,7 +596,7 @@ public class GdbGelderlandExport {
                 if (rangeOption == null) {
                     oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
                 } else {
-                    oModel.setOwnershipCategory(ExportUtil.getOwnershipCategory(
+                    oModel.setOwnershipCategory(getOwnershipCategory(
                             projectUuid,
                             sqlModel.getHouseblockId(),
                             o.getOwnershipType(),
@@ -610,10 +610,11 @@ public class GdbGelderlandExport {
             }
         } else {
             if (o.getOwnershipRentalValue() != null) {
-                oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue(), pcp));
-            } else if (o.getOwnershipRentalValueRangeMin() != null) {
                 oModel.setOwnershipCategory(
-                        ExportUtil.getOwnershipCategory(
+                        getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue(), pcp));
+            } else if (o.getOwnershipRentalValueRangeMin() != null || o.getOwnershipRentalValueRangeMax() != null) {
+                oModel.setOwnershipCategory(
+                        getOwnershipCategory(
                                 projectUuid,
                                 sqlModel.getHouseblockId(),
                                 o.getOwnershipType(),
@@ -630,7 +631,7 @@ public class GdbGelderlandExport {
                     oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
                 } else {
                     oModel.setOwnershipCategory(
-                            ExportUtil.getOwnershipCategory(projectUuid,
+                            getOwnershipCategory(projectUuid,
                                     sqlModel.getHouseblockId(),
                                     o.getOwnershipType(),
                                     rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),

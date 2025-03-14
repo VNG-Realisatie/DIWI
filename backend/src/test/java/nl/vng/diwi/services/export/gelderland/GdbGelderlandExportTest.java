@@ -157,6 +157,11 @@ public class GdbGelderlandExportTest {
     @Test
     void testGetProjectFeature() throws Exception {
         // Some constants
+        final long huur1 = 700_00;
+        final long huur2 = 850_00;
+        final long huur3 = 1000_00;
+        final long huur4 = 1500_00l;
+
         LocalDate exportDate = LocalDate.of(2025, 3, 2); // Same as middle house block so we have future and past blocks
         String targetCrs = "EPSG:28992";
         LoggedUser user = LoggedUser.builder()
@@ -207,26 +212,27 @@ public class GdbGelderlandExportTest {
                                 .mutationKind(MutationType.CONSTRUCTION)
                                 .deliveryYear(2025)
                                 .ownershipValueList(List.of(
-                                        OwnershipValueSqlModel.builder()
+                                        OwnershipValueSqlModel.builder() // A house with a single value
                                                 .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
-                                                .ownershipRentalValue(100l)
+                                                .ownershipRentalValue(huur2)
                                                 .build(),
-                                        OwnershipValueSqlModel.builder()
+                                        OwnershipValueSqlModel.builder() // A house with a min value
                                                 .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
-                                                .ownershipRentalValueRangeMin(500_000_00l)
+                                                .ownershipRentalValueRangeMin(huur4)
                                                 .build(),
-                                        OwnershipValueSqlModel.builder()
+                                        OwnershipValueSqlModel.builder() // A house with a max value
                                                 .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
-                                                .ownershipRentalValueRangeMax(100_00l)
+                                                .ownershipRentalValueRangeMin(0l)
+                                                .ownershipRentalValueRangeMax(huur1)
                                                 .build(),
-                                        OwnershipValueSqlModel.builder()
+                                        OwnershipValueSqlModel.builder() // A house with a range
                                                 .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
-                                                .ownershipRentalValueRangeMin(100_00l)
-                                                .ownershipRentalValueRangeMax(120_00l)
+                                                .ownershipRentalValueRangeMin(huur2)
+                                                .ownershipRentalValueRangeMax(huur2 + 1)
                                                 .build()))
                                 .meergezinswoning(4)
                                 .eengezinswoning(0)
@@ -242,7 +248,7 @@ public class GdbGelderlandExportTest {
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(2)
                                                 .ownershipType(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)
-                                                .ownershipRentalValue(100l)
+                                                .ownershipRentalValue(huur3)
                                                 .build()))
                                 .meergezinswoning(0)
                                 .eengezinswoning(2)
