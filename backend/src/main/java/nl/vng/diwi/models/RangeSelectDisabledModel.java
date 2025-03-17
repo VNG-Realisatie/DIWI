@@ -17,7 +17,7 @@ public class RangeSelectDisabledModel extends SelectModel {
     @JsonProperty(required = true)
     private BigDecimal min;
 
-    @JsonProperty(required = false)
+    @JsonProperty
     private BigDecimal max;
 
     @JsonProperty(required = true)
