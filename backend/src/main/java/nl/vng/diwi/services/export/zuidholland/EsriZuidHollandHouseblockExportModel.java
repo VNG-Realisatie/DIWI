@@ -85,8 +85,8 @@ public class EsriZuidHollandHouseblockExportModel {
                             projectUuid,
                             sqlModel.getHouseblockId(),
                             o.getOwnershipType(),
-                            rangeOption.getMin().longValue(),
-                            rangeOption.getMax().longValue(),
+                            rangeOption.getMin() != null ? rangeOption.getMin().longValue() : null,
+                            rangeOption.getMax() != null ? rangeOption.getMax().longValue() : null,
                             priceCategoryMap,
                             errors));
                 }
@@ -118,8 +118,8 @@ public class EsriZuidHollandHouseblockExportModel {
                             ExportUtil.getOwnershipCategory(projectUuid,
                                     sqlModel.getHouseblockId(),
                                     o.getOwnershipType(),
-                                    rangeOption.getMin().longValue(),
-                                    rangeOption.getMax().longValue(),
+                                    rangeOption.getMin() != null ? rangeOption.getMin().longValue() : null,
+                                    rangeOption.getMax() != null ? rangeOption.getMax().longValue() : null,
                                     priceCategoryMap,
                                     errors));
                 }
