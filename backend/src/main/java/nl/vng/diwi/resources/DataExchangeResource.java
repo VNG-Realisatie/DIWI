@@ -1,6 +1,5 @@
 package nl.vng.diwi.resources;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -47,7 +46,6 @@ public class DataExchangeResource {
     private final DataExchangeService dataExchangeService;
     private final ConfigModel configModel;
 
-    public static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Inject
     public DataExchangeResource(GenericRepository genericRepository, DataExchangeService dataExchangeService, ProjectConfig projectConfig) {
