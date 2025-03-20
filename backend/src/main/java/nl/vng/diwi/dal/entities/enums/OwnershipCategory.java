@@ -1,4 +1,4 @@
-package nl.vng.diwi.services.export;
+package nl.vng.diwi.dal.entities.enums;
 
 public enum OwnershipCategory {
     koop1,

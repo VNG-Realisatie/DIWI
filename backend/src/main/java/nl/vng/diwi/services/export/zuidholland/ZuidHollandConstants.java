@@ -3,7 +3,7 @@ package nl.vng.diwi.services.export.zuidholland;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.vng.diwi.services.export.OwnershipCategory;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 
 public class ZuidHollandConstants {
     public static Map<OwnershipCategory, Long> priceRangeMap = new HashMap<>();

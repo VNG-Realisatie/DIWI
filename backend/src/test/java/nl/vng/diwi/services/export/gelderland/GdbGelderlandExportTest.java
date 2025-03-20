@@ -291,12 +291,15 @@ public class GdbGelderlandExportTest {
 
         List<DataExchangeExportError> errors = new ArrayList<>();
 
+
         PropertyModel priceRangeBuyFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
         PropertyModel priceRangeRentFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT)).findFirst().orElse(null);
         PropertyModel municipalityFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
+
+        // Create a map from the custom property id to the custom property definition
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
         var result = GdbGelderlandExport.getProjectFeature(

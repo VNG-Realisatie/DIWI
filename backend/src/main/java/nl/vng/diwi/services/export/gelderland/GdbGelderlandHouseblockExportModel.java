@@ -5,6 +5,7 @@ import static nl.vng.diwi.services.export.ExportUtil.*;
 import lombok.Data;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
 import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategoryPeriod;
@@ -12,7 +13,6 @@ import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
-import nl.vng.diwi.services.export.OwnershipCategory;
 
 import java.util.ArrayList;
 import java.util.List;
