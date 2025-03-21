@@ -6,7 +6,7 @@ export type ExportType = "ESRI_ZUID_HOLLAND" | "GDB_GELDERLAND" | "GEO_JSON" | "
 
 const exportTypeToFileExtension: { [key in ExportType]: string } = {
     ESRI_ZUID_HOLLAND: "geojson",
-    GDB_GELDERLAND: "zip",
+    GDB_GELDERLAND: "gdb.zip",
     GEO_JSON: "geojson",
     EXCEL: "xlsx",
 };
