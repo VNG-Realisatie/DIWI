@@ -26,8 +26,26 @@ import java.util.stream.Collectors;
 @With
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 public class DataExchangeModel {
+    @Data
+    @NoArgsConstructor
+    public static class PriceCategoryMapping {
+        @JsonProperty(required = true)
+        String name;
+
+        @JsonProperty(required = true)
+        List<UUID> categoryValueIds;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class PriceCategories {
+        @JsonProperty(required = true)
+        List<PriceCategoryMapping> rent = new ArrayList<>();
+
+        @JsonProperty(required = true)
+        List<PriceCategoryMapping> buy = new ArrayList<>();
+    }
 
     @JsonProperty(required = true)
     private UUID id;
@@ -49,6 +67,8 @@ public class DataExchangeModel {
     private String projectDetailUrl;
 
     private Boolean valid;
+
+    private PriceCategories priceCategories;
 
     private List<DataExchangePropertyModel> properties = new ArrayList<>();
 

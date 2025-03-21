@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.*;
@@ -32,6 +33,8 @@ public class DatabaseTest {
 
     private static ZonedDateTime now = ZonedDateTime.of(2000, 1, 1, 12, 0, 0, 0, ZoneId.of("UTC"));
 
+    private DataExchangePriceCategoryMappingState dxpms;
+
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
@@ -44,7 +47,6 @@ public class DatabaseTest {
     }
 
     void executeUpdate(String... lines) {
-
         try (Dal dal = testDb.getDalFactory().constructDal();
                 Session session = dal.getSession();
                 var transaction = dal.beginTransaction()) {
@@ -56,7 +58,6 @@ public class DatabaseTest {
     }
 
     <T> T persist(T newEntity) {
-
         try (var dal = testDb.getDalFactory().constructDal();
                 var session = dal.getSession();
                 var transaction = dal.beginTransaction()) {
@@ -191,7 +192,18 @@ public class DatabaseTest {
             persist(entity);
         });
 
-        persist(createDxpms.get());
+        dxpms = createDxpms.get();
+        persist(dxpms);
+
+        List<DataExchangePriceCategoryMappingState> mapping;
+        try (var dal = testDb.getDalFactory().constructDal();
+                var session = dal.getSession();
+                var transaction = dal.beginTransaction()) {
+             mapping = new DataExchangeDAO(session).getDataExchangePriceMappings(dx.getId());
+        }
+        assertThat(mapping)
+                .extracting("id", "priceRange.id", "dataExchangePriceCategoryMapping.ownershipCategory")
+                .containsExactly(Tuple.tuple(dxpms.getId(), prcv.getId(), OwnershipCategory.HUUR1));
     }
 
     @Test
