@@ -33,6 +33,8 @@ public class GenericRepository implements AutoCloseable {
                 DataExchangePropertyState.class,
                 DataExchangeOption.class,
                 DataExchangeOptionState.class,
+                DataExchangePriceCategoryMapping.class,
+                DataExchangePriceCategoryMappingState.class,
                 PropertyCategoryValue.class,
                 PropertyCategoryValueState.class,
                 PropertyRangeCategoryValue.class,

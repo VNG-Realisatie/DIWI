@@ -17,13 +17,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
+import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
 
 @Entity
 @Table(name = "data_exchange_price_category_mapping", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class DataExchangePriceCategoryMapping {
+public class DataExchangePriceCategoryMapping extends IdSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "data_exchange_id")
