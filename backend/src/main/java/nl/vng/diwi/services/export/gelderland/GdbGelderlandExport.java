@@ -364,7 +364,7 @@ public class GdbGelderlandExport {
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
                     aantal_huurwoningen_corporatie += o.getOwnershipAmount();
 
-                    if (model.getOwnershipCategory() == OwnershipCategory.huur3) {
+                    if (model.getOwnershipCategory() == OwnershipCategory.HUUR3) {
                         aantal_middenhuur_corporatie += bouwFactor * model.getAmount();
                     }
                 }
@@ -509,7 +509,7 @@ public class GdbGelderlandExport {
                                 && r.getId().equals(o.getOwnershipRangeCategoryId()))
                         .findFirst().orElse(null);
                 if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                    oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
                 } else {
                     oModel.setOwnershipCategory(getOwnershipCategory(
                             projectUuid,
@@ -521,7 +521,7 @@ public class GdbGelderlandExport {
                             errors));
                 }
             } else {
-                oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
             }
         } else {
             if (o.getOwnershipRentalValue() != null) {
@@ -543,7 +543,7 @@ public class GdbGelderlandExport {
                                 && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
                         .findFirst().orElse(null);
                 if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                    oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
                 } else {
                     oModel.setOwnershipCategory(
                             getOwnershipCategory(projectUuid,
@@ -555,7 +555,7 @@ public class GdbGelderlandExport {
                                     errors));
                 }
             } else {
-                oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
             }
         }
         return oModel;

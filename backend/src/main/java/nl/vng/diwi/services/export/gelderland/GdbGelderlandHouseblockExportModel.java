@@ -97,7 +97,7 @@ public class GdbGelderlandHouseblockExportModel {
                                 && r.getId().equals(o.getOwnershipRangeCategoryId()))
                         .findFirst().orElse(null);
                 if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                    oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
                 } else {
                     oModel.setOwnershipCategory(ExportUtil.getOwnershipCategory(
                             projectUuid,
@@ -109,7 +109,7 @@ public class GdbGelderlandHouseblockExportModel {
                             errors));
                 }
             } else {
-                oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
             }
         } else {
             if (o.getOwnershipRentalValue() != null) {
@@ -130,7 +130,7 @@ public class GdbGelderlandHouseblockExportModel {
                                 && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
                         .findFirst().orElse(null);
                 if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                    oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
                 } else {
                     oModel.setOwnershipCategory(
                             ExportUtil.getOwnershipCategory(projectUuid,
@@ -142,7 +142,7 @@ public class GdbGelderlandHouseblockExportModel {
                                     errors));
                 }
             } else {
-                oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
             }
         }
         return oModel;

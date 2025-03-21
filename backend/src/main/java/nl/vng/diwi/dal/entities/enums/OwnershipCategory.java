@@ -1,14 +1,14 @@
 package nl.vng.diwi.dal.entities.enums;
 
 public enum OwnershipCategory {
-    koop1,
-    koop2,
-    koop3,
-    koop4,
-    koop_onb,
-    huur1,
-    huur2,
-    huur3,
-    huur4,
-    huur_onb;
+    KOOP1,
+    KOOP2,
+    KOOP3,
+    KOOP4,
+    KOOP_ONB,
+    HUUR1,
+    HUUR2,
+    HUUR3,
+    HUUR4,
+    HUUR_ONB;
 }

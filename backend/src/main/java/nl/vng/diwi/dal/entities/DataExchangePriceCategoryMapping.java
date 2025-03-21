@@ -1,7 +1,13 @@
 package nl.vng.diwi.dal.entities;
 
 
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -23,5 +29,8 @@ public class DataExchangePriceCategoryMapping {
     @JoinColumn(name = "data_exchange_id")
     private DataExchange dataExchange;
 
+    @Column(name = "ownership_category")
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private OwnershipCategory ownershipCategory;
 }

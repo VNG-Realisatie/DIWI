@@ -213,13 +213,13 @@ public class DataExchangeTemplate {
                         new PriceCategoryPeriod(
                                 null,
                                 List.of(
-                                        new PriceCategory(OwnershipCategory.koop2, 405_000_00l),
-                                        new PriceCategory(OwnershipCategory.koop4, null)),
+                                        new PriceCategory(OwnershipCategory.KOOP2, 405_000_00l),
+                                        new PriceCategory(OwnershipCategory.KOOP4, null)),
                                 List.of(
-                                        new PriceCategory(OwnershipCategory.huur1, 731_00l),
-                                        new PriceCategory(OwnershipCategory.huur2, 900_07l),
-                                        new PriceCategory(OwnershipCategory.huur3, 1_185_00l),
-                                        new PriceCategory(OwnershipCategory.huur4, null)))))
+                                        new PriceCategory(OwnershipCategory.HUUR1, 731_00l),
+                                        new PriceCategory(OwnershipCategory.HUUR2, 900_07l),
+                                        new PriceCategory(OwnershipCategory.HUUR3, 1_185_00l),
+                                        new PriceCategory(OwnershipCategory.HUUR4, null)))))
                 .properties(ImmutableList.<TemplateProperty>builder()
                         .add(TemplateProperty.builder()
                                 .name("gemeente")

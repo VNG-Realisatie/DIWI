@@ -21,21 +21,21 @@ import nl.vng.diwi.services.export.zuidholland.ZuidHollandConstants;
 public class ExportUtilTest {
     private static Stream<Arguments> ranges() {
         return Stream.of(
-                Arguments.of(OwnershipType.KOOPWONING, null, null, OwnershipCategory.koop_onb),
-                Arguments.of(OwnershipType.KOOPWONING, 0L, 28000000L - 1, OwnershipCategory.koop1),
-                Arguments.of(OwnershipType.KOOPWONING, 28000000L, 39000000L - 1, OwnershipCategory.koop2),
-                Arguments.of(OwnershipType.KOOPWONING, 39000000L, 60000000L - 1, OwnershipCategory.koop3),
-                Arguments.of(OwnershipType.KOOPWONING, 60000000L, null, OwnershipCategory.koop4),
-                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, null, null, OwnershipCategory.huur_onb),
-                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, 0L, 69400L - 1, OwnershipCategory.huur1),
-                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, 69400L, 88000L - 1, OwnershipCategory.huur2),
-                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, 88000L, 112300L - 1, OwnershipCategory.huur3),
-                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, 112300L, null, OwnershipCategory.huur4),
-                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, null, null, OwnershipCategory.huur_onb),
-                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, 0L, 69400L - 1, OwnershipCategory.huur1),
-                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, 69400L, 88000L - 1, OwnershipCategory.huur2),
-                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, 88000L, 112300L - 1, OwnershipCategory.huur3),
-                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, 112300L, null, OwnershipCategory.huur4));
+                Arguments.of(OwnershipType.KOOPWONING, null, null, OwnershipCategory.KOOP_ONB),
+                Arguments.of(OwnershipType.KOOPWONING, 0L, 28000000L - 1, OwnershipCategory.KOOP1),
+                Arguments.of(OwnershipType.KOOPWONING, 28000000L, 39000000L - 1, OwnershipCategory.KOOP2),
+                Arguments.of(OwnershipType.KOOPWONING, 39000000L, 60000000L - 1, OwnershipCategory.KOOP3),
+                Arguments.of(OwnershipType.KOOPWONING, 60000000L, null, OwnershipCategory.KOOP4),
+                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, null, null, OwnershipCategory.HUUR_ONB),
+                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, 0L, 69400L - 1, OwnershipCategory.HUUR1),
+                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, 69400L, 88000L - 1, OwnershipCategory.HUUR2),
+                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, 88000L, 112300L - 1, OwnershipCategory.HUUR3),
+                Arguments.of(OwnershipType.HUURWONING_WONINGCORPORATIE, 112300L, null, OwnershipCategory.HUUR4),
+                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, null, null, OwnershipCategory.HUUR_ONB),
+                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, 0L, 69400L - 1, OwnershipCategory.HUUR1),
+                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, 69400L, 88000L - 1, OwnershipCategory.HUUR2),
+                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, 88000L, 112300L - 1, OwnershipCategory.HUUR3),
+                Arguments.of(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER, 112300L, null, OwnershipCategory.HUUR4));
     }
 
     @ParameterizedTest
@@ -68,16 +68,16 @@ public class ExportUtilTest {
         // for the range instead of a min so we need a -1 to compensate
         PriceCategoryPeriod pcp = PriceCategoryPeriod.builder()
                 .categoriesBuy(List.of(
-                        new PriceCategory(OwnershipCategory.koop1, 28000000L - 1),
-                        new PriceCategory(OwnershipCategory.koop2, 39000000L - 1),
-                        new PriceCategory(OwnershipCategory.koop3, 60000000L - 1),
-                        new PriceCategory(OwnershipCategory.koop4, null)))
+                        new PriceCategory(OwnershipCategory.KOOP1, 28000000L - 1),
+                        new PriceCategory(OwnershipCategory.KOOP2, 39000000L - 1),
+                        new PriceCategory(OwnershipCategory.KOOP3, 60000000L - 1),
+                        new PriceCategory(OwnershipCategory.KOOP4, null)))
 
                 .categoriesRent(List.of(
-                        new PriceCategory(OwnershipCategory.huur1, 69400L - 1),
-                        new PriceCategory(OwnershipCategory.huur2, 88000L - 1),
-                        new PriceCategory(OwnershipCategory.huur3, 112300L - 1),
-                        new PriceCategory(OwnershipCategory.huur4, null)))
+                        new PriceCategory(OwnershipCategory.HUUR1, 69400L - 1),
+                        new PriceCategory(OwnershipCategory.HUUR2, 88000L - 1),
+                        new PriceCategory(OwnershipCategory.HUUR3, 112300L - 1),
+                        new PriceCategory(OwnershipCategory.HUUR4, null)))
                 .build();
         var cat = ExportUtil.getOwnershipCategory(
                 uuid,
