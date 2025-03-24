@@ -1,14 +1,15 @@
 package nl.vng.diwi.dal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static nl.vng.diwi.dal.entities.enums.OwnershipCategory.HUUR1;
+import static nl.vng.diwi.dal.entities.enums.OwnershipCategory.KOOP1;
 import static org.assertj.core.api.Assertions.*;
 
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.assertj.core.groups.Tuple;
 import org.hibernate.Session;
 import org.junit.jupiter.api.AfterAll;
@@ -193,17 +194,27 @@ public class DatabaseTest {
         });
 
         dxpms = createDxpms.get();
+
         persist(dxpms);
 
-        List<DataExchangePriceCategoryMappingState> mapping;
+        List<DataExchangePriceCategoryMapping> mappings;
         try (var dal = testDb.getDalFactory().constructDal();
                 var session = dal.getSession();
                 var transaction = dal.beginTransaction()) {
-             mapping = new DataExchangeDAO(session).getDataExchangePriceMappings(dx.getId());
+            mappings = new DataExchangeDAO(session).getDataExchangePriceMappings(dx.getId());
         }
-        assertThat(mapping)
-                .extracting("id", "priceRange.id", "dataExchangePriceCategoryMapping.ownershipCategory")
-                .containsExactly(Tuple.tuple(dxpms.getId(), prcv.getId(), OwnershipCategory.HUUR1));
+
+        assertThat(mappings).hasSize(1);
+        var mapping = mappings.get(0);
+        assertThat(mapping.getOwnershipCategory()).isEqualTo(HUUR1);
+
+        assertThat(mapping.getMappings())
+                .extracting(
+                        "id",
+                        "priceRange.id",
+                        "dataExchangePriceCategoryMapping.ownershipCategory")
+                .containsExactly(
+                        Tuple.tuple(dxpms.getId(), prcv.getId(), OwnershipCategory.HUUR1));
     }
 
     @Test
