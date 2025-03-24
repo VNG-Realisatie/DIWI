@@ -65,18 +65,7 @@ function ExportAdminPage() {
     const [exportTypes, setExportTypes] = useState<ExportType[]>([]);
     const [visibleOptions, setVisibleOptions] = useState<{ [key: string]: boolean }>({});
 
-    const [gelderlandPriceCategories, setGelderlandPriceCategories] = useState<GelderlandPriceCategories>({
-        rent: [
-            { name: "huur1", categoryValueIds: [] },
-            { name: "huur3", categoryValueIds: [] },
-        ],
-        buy: [
-            { name: "koop1", categoryValueIds: [] },
-            { name: "koop2", categoryValueIds: [] },
-            { name: "koop3", categoryValueIds: [] },
-            { name: "koop4", categoryValueIds: [] },
-        ],
-    });
+    const [gelderlandPriceCategories, setGelderlandPriceCategories] = useState<GelderlandPriceCategories | undefined>();
 
     const toggleOptions = (propertyId: string) => {
         setVisibleOptions((prev) => ({
@@ -183,6 +172,7 @@ function ExportAdminPage() {
                 setFormData(formData);
                 setProperties(updatedProperties || []);
                 setType({ id: data.type as ExportType, name: t(`admin.export.${data.type}`) });
+                setGelderlandPriceCategories(priceCategories);
             };
             fetchData();
         }
@@ -209,6 +199,7 @@ function ExportAdminPage() {
                 clientId: formData?.clientId,
                 projectUrl: formData?.projectUrl ?? "",
                 ...(id && { properties }),
+                priceCategories: gelderlandPriceCategories,
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setValidationErrors(data.validationErrors || []);

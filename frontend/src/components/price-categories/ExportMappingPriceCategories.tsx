@@ -8,13 +8,14 @@ import { CustomPropertyWidget } from "../CustomPropertyWidget";
 import { ObjectType } from "../../types/enums";
 
 type Props = {
-    priceCategories: GelderlandPriceCategories;
+    priceCategories: GelderlandPriceCategories | undefined;
     customProperties: Property[];
     setPriceCategories: (priceCategories: GelderlandPriceCategories) => void;
     mapPropertyToCustomDefinition: (property: ExportProperty, selectedProperty: Property) => Property;
 };
 
 const ExportMappingPriceCategories = ({ priceCategories, customProperties, setPriceCategories, mapPropertyToCustomDefinition }: Props) => {
+    if (!priceCategories) return null;
     const rentCustomProperties = customProperties.filter((property) => property.name === "priceRangeRent");
     const buyCustomProperties = customProperties.filter((property) => property.name === "priceRangeBuy");
 
