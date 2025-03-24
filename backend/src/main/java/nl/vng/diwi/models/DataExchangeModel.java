@@ -23,6 +23,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static nl.vng.diwi.dal.entities.enums.PropertyType.CATEGORY;
+import static nl.vng.diwi.dal.entities.enums.PropertyType.ORDINAL;
+
 @Data
 @With
 @AllArgsConstructor
@@ -126,10 +129,10 @@ public class DataExchangeModel {
             Set<UUID> templateOptionIds = new HashSet<>();
             Set<UUID> propOptionIds = new HashSet<>();
             if (templateModel.getOptions() != null) {
-                templateModel.getOptions().stream().forEach(o -> templateOptionIds.add(o.getId()));
+                templateModel.getOptions().forEach(o -> templateOptionIds.add(o.getId()));
             }
             if (propModel.getOptions() != null) {
-                propModel.getOptions().stream().forEach(o -> propOptionIds.add(o.getId()));
+                propModel.getOptions().forEach(o -> propOptionIds.add(o.getId()));
             }
             if (templateOptionIds.size() != propOptionIds.size() || !templateOptionIds.containsAll(propOptionIds)) {
                 return "Model does not include all the options in the template for property " + propModel.getId() + ".";
@@ -156,8 +159,8 @@ public class DataExchangeModel {
                     return baseError + "does not match the expected property type.";
                 } else if (dxProp.getMandatory() && (prop.getMandatory() != dxProp.getMandatory())) {
                     return baseError + "does not have the expected mandatory flag (" + dxProp.getMandatory() + ").";
-                } else if (List.of(PropertyType.CATEGORY, PropertyType.ORDINAL).contains(prop.getPropertyType())
-                        && prop.getSingleSelect() != dxProp.getSingleSelect()) {
+                } else if (List.of(CATEGORY, ORDINAL).contains(prop.getPropertyType())
+                        && (!prop.getSingleSelect() && dxProp.getSingleSelect())) {
                     return baseError + "does not have the expected single select flag.";
                 }
                 if (dxProp.getOptions() != null) {
@@ -209,7 +212,7 @@ public class DataExchangeModel {
                 if (dxPropModel.getMandatory()){
                     validationErrors.add(new ValidationError(dxPropModel.getName(), null, DxValidationError.MISSING_CUSTOM_PROP));
                 }
-            } else if (propertyModel.getPropertyType() == PropertyType.CATEGORY && dxPropModel.getOptions() != null) {
+            } else if (propertyModel.getPropertyType() == CATEGORY && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
                     if (dxOption.getPropertyCategoryValueIds() != null && !dxOption.getPropertyCategoryValueIds().isEmpty()) {
@@ -234,7 +237,7 @@ public class DataExchangeModel {
                                 }
                             });
                 }
-            } else if (propertyModel.getPropertyType() == PropertyType.ORDINAL && dxPropModel.getOptions() != null) {
+            } else if (propertyModel.getPropertyType() == ORDINAL && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
                     if (dxOption.getPropertyOrdinalValueIds() != null && !dxOption.getPropertyOrdinalValueIds().isEmpty()) {

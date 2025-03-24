@@ -11,6 +11,16 @@ const exportTypeToFileExtension: { [key in ExportType]: string } = {
     EXCEL: "xlsx",
 };
 
+export type GelderlandPriceCategory = {
+    name: string;
+    categoryValueIds: string[];
+};
+
+export type GelderlandPriceCategories = {
+    rent: GelderlandPriceCategory[];
+    buy: GelderlandPriceCategory[];
+};
+
 export type PropertyOption = {
     id: string;
     name: string;
@@ -40,6 +50,7 @@ export type ExportData = {
     valid?: boolean;
     validationErrors?: ValidationError[];
     minimumConfidentiality?: ConfidentialityLevel;
+    priceCategories?: GelderlandPriceCategories;
 };
 
 export type ValidationError = {

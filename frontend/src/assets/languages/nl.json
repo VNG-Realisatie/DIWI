@@ -380,6 +380,10 @@
         "squit": "Importeren vanuit Squit",
         "geojson": "Importeren vanuit GeoJSON"
       },
+      "priceCategories" : {
+        "rent" : "Prijscategorien huur",
+        "buy" : "Prijscategorien koop"
+      },
       "validationErrors": {
         "missing_custom_prop": "Maatwerk eigenschap ontbreekt",
         "option_not_mapped": "Optie van maatwerk categorie is niet gemapt",
