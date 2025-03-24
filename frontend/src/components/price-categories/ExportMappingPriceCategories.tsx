@@ -1,63 +1,73 @@
-import React from "react";
-import { GelderlandPriceCategories } from "../../api/exportServices";
+import { ExportProperty, GelderlandPriceCategories } from "../../api/exportServices";
 import { Property } from "../../api/adminSettingServices";
 import { Box, Grid } from "@mui/material";
 import { LabelComponent } from "../project/LabelComponent";
 import CategoryInput from "../project/inputs/CategoryInput";
 import { t } from "i18next";
+import { CustomPropertyWidget } from "../CustomPropertyWidget";
+import { ObjectType } from "../../types/enums";
 
 type Props = {
     priceCategories: GelderlandPriceCategories;
     customProperties: Property[];
     setPriceCategories: (priceCategories: GelderlandPriceCategories) => void;
+    mapPropertyToCustomDefinition: (property: ExportProperty, selectedProperty: Property) => Property;
 };
 
-const ExportMappingPriceCategories = ({ priceCategories, customProperties, setPriceCategories }: Props) => {
+const ExportMappingPriceCategories = ({ priceCategories, customProperties, setPriceCategories, mapPropertyToCustomDefinition }: Props) => {
     const rentCustomProperties = customProperties.filter((property) => property.name === "priceRangeRent");
     const buyCustomProperties = customProperties.filter((property) => property.name === "priceRangeBuy");
 
-    const handleSetValue = (index: number) => (selectedIds: string[]) => {
-        console.log("handleSetValue called with selectedIds:", selectedIds);
-        const updatedRentCategories = [...priceCategories.rent];
-        updatedRentCategories[index].categoryValueIds = selectedIds;
-        setPriceCategories({
-            ...priceCategories,
-            rent: updatedRentCategories,
-        });
+    const handleSetCustomValue = (type: "rent" | "buy", index: number, newValue: { categories: string[] }) => {
+        const updatedCategories = [...priceCategories[type]];
+        updatedCategories[index].categoryValueIds = newValue.categories;
+        setPriceCategories({ ...priceCategories, [type]: updatedCategories });
     };
 
-    return (
-        <>
+    const renderCategorySection = (type: "rent" | "buy", customProperties: Property[]) => {
+        return (
             <Grid item xs={12}>
-                <CategoryInput readOnly={true} mandatory={false} options={[]} values={{ id: "", name: "rent" }} setValue={() => {}} multiple={false} />
+                <CategoryInput
+                    readOnly={true}
+                    mandatory={false}
+                    options={[]}
+                    values={{ id: "", name: t(`exchangeData.priceCategories.${type}`) }}
+                    setValue={() => {}}
+                    multiple={false}
+                />
 
-                {priceCategories.rent.map((category, index) => {
-                    if (!rentCustomProperties[0].ranges) return;
+                {priceCategories[type].map((category, index) => {
+                    if (!customProperties[0].ranges) return;
+
+                    const extendedCategory = {
+                        ...category,
+                        objectType: "PROJECT" as ObjectType,
+                        mandatory: false,
+                        propertyTypes: ["CATEGORY"],
+                        singleSelect: false,
+                    };
+
                     return (
                         <Box key={index} marginLeft={10}>
                             <LabelComponent text={category.name} required={false} disabled={false} />
-                            <CategoryInput
+                            <CustomPropertyWidget
                                 readOnly={false}
-                                mandatory={false}
-                                options={rentCustomProperties[0].ranges}
-                                values={category.categoryValueIds}
-                                setValue={() => handleSetValue(index)}
-                                multiple={true}
+                                customValue={category && category.categoryValueIds && { categories: category.categoryValueIds }}
+                                customDefinition={mapPropertyToCustomDefinition(extendedCategory, customProperties[0])}
+                                setCustomValue={(newValue) => handleSetCustomValue(type, index, { categories: newValue.categories || [] })}
+                                isExportPage={true}
                             />
                         </Box>
                     );
                 })}
             </Grid>
-            <Grid item xs={12}>
-                <CategoryInput
-                    readOnly={true}
-                    mandatory={false}
-                    options={buyCustomProperties}
-                    values={{ id: "", name: "buy" }}
-                    setValue={() => {}}
-                    multiple={false}
-                />
-            </Grid>
+        );
+    };
+
+    return (
+        <>
+            {renderCategorySection("rent", rentCustomProperties)}
+            {renderCategorySection("buy", buyCustomProperties)}
         </>
     );
 };

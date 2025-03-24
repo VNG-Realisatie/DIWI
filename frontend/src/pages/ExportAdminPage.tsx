@@ -132,34 +132,6 @@ function ExportAdminPage() {
 
     const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
 
-    const dummycustomProperties: Property[] = [
-        // Define your custom properties here
-        {
-            name: "priceRangeRent",
-            type: "CUSTOM",
-            objectType: "PROJECT",
-            propertyType: "RANGE_CATEGORY",
-            disabled: false,
-            mandatory: false,
-            ranges: [
-                { id: "1", name: "Range 1", min: 0, disabled: false },
-                { id: "2", name: "Range 2", min: 0, disabled: false },
-            ],
-        },
-        {
-            name: "priceRangeBuy",
-            type: "CUSTOM",
-            objectType: "PROJECT",
-            propertyType: "RANGE_CATEGORY",
-            disabled: false,
-            mandatory: false,
-            ranges: [
-                { id: "3", name: "Range 3", min: 0, disabled: false },
-                { id: "4", name: "Range 4", min: 0, disabled: false },
-            ],
-        },
-    ];
-
     useEffect(() => {
         if (id) return;
         setFormData(generateInitialState(type));
@@ -282,23 +254,24 @@ function ExportAdminPage() {
             ? matchingCustomProperty.categories
             : matchingCustomProperty?.ordinals?.length
               ? matchingCustomProperty.ordinals
-              : [];
+              : matchingCustomProperty?.ranges?.length
+                ? matchingCustomProperty.ranges.map((range) => ({
+                      id: range.id,
+                      name: range.name,
+                      disabled: range.disabled,
+                  }))
+                : [];
 
-        const ranges = matchingCustomProperty?.ranges?.length ? matchingCustomProperty.ranges : [];
         return {
             id: property.id,
             name: property.name,
             type: "CUSTOM",
             objectType: property.objectType,
-            propertyType:
-                property.propertyTypes[0] === "RANGE_CATEGORY"
-                    ? "CATEGORY"
-                    : (property.propertyTypes[0] as "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY"),
+            propertyType: property.propertyTypes[0] as "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY",
             disabled: false,
             categories: categoriesOrOrdinals.filter((item) => !item.disabled),
-            singleSelect: ranges.length > 0 ? false : property.singleSelect,
-            mandatory: property.mandatory || false,
-            ranges: ranges.filter((item) => !item.disabled),
+            singleSelect: property.singleSelect,
+            mandatory: property.mandatory,
         };
     };
 
@@ -339,7 +312,8 @@ function ExportAdminPage() {
                 <ExportMappingPriceCategories
                     priceCategories={gelderlandPriceCategories}
                     setPriceCategories={setGelderlandPriceCategories}
-                    customProperties={dummycustomProperties}
+                    customProperties={customProperties}
+                    mapPropertyToCustomDefinition={mapPropertyToCustomDefinition}
                 />
 
                 {properties.map((property, index) => {
