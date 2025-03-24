@@ -3,7 +3,6 @@ package nl.vng.diwi.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import nl.vng.diwi.dal.entities.DataExchangeState;

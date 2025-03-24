@@ -1,7 +1,5 @@
 package nl.vng.diwi.services;
 
-import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
-
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,7 +20,6 @@ import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
 import nl.vng.diwi.dal.entities.DataExchangeOptionState;
 import nl.vng.diwi.dal.entities.DataExchangePriceCategoryMapping;
-import nl.vng.diwi.dal.entities.DataExchangePriceCategoryMappingState;
 import nl.vng.diwi.dal.entities.DataExchangeProperty;
 import nl.vng.diwi.dal.entities.DataExchangePropertySqlModel;
 import nl.vng.diwi.dal.entities.DataExchangePropertyState;

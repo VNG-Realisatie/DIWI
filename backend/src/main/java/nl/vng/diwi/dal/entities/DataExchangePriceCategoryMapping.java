@@ -2,6 +2,7 @@ package nl.vng.diwi.dal.entities;
 
 import java.util.List;
 
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
@@ -37,6 +38,7 @@ public class DataExchangePriceCategoryMapping extends IdSuperclass {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private OwnershipCategory ownershipCategory;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "data_exchange_price_category_mapping_state")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "dataExchangePriceCategoryMapping")
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<DataExchangePriceCategoryMappingState> mappings;
 }
