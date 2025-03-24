@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal.entities;
 
+import java.util.List;
 
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
@@ -11,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,4 +36,7 @@ public class DataExchangePriceCategoryMapping extends IdSuperclass {
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private OwnershipCategory ownershipCategory;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "data_exchange_price_category_mapping_state")
+    private List<DataExchangePriceCategoryMappingState> mappings;
 }

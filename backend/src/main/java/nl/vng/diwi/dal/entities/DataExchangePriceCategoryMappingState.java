@@ -7,9 +7,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.With;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 
@@ -18,6 +20,8 @@ import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 @Getter
 @Setter
 @NoArgsConstructor
+@With
+@AllArgsConstructor
 @Filter(name = GenericRepository.CURRENT_DATA_FILTER)
 public class DataExchangePriceCategoryMappingState extends ChangeDataSuperclass {
 

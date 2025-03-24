@@ -9,6 +9,7 @@ import lombok.With;
 import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 
@@ -29,9 +30,11 @@ import java.util.stream.Collectors;
 public class DataExchangeModel {
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @With
     public static class PriceCategoryMapping {
         @JsonProperty(required = true)
-        String name;
+        OwnershipCategory name;
 
         @JsonProperty(required = true)
         List<UUID> categoryValueIds;
@@ -39,6 +42,8 @@ public class DataExchangeModel {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @With
     public static class PriceCategories {
         @JsonProperty(required = true)
         List<PriceCategoryMapping> rent = new ArrayList<>();
@@ -76,7 +81,8 @@ public class DataExchangeModel {
 
     public DataExchangeModel(
             DataExchangeState dataExchangeState,
-            boolean includeApiKey) {
+            boolean includeApiKey,
+            DataExchangeTemplate template) {
         this.setId(dataExchangeState.getDataExchange().getId());
         this.setName(dataExchangeState.getName());
         this.setType(dataExchangeState.getType());
@@ -86,7 +92,6 @@ public class DataExchangeModel {
         this.setProjectUrl(dataExchangeState.getProjectUrl());
         this.setValid(dataExchangeState.getValid());
 
-        var template = DataExchangeTemplate.templates.get(dataExchangeState.getType());
         this.setMinimumConfidentiality(template.getMinimumConfidentiality());
         this.setClientId(dataExchangeState.getClientId());
     }

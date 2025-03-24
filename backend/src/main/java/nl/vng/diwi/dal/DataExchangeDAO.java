@@ -67,12 +67,12 @@ public class DataExchangeDAO extends AbstractRepository {
             .getResultList();
     }
 
-    public List<DataExchangePriceCategoryMappingState> getDataExchangePriceMappings(UUID dataExchangeId) {
+    public List<DataExchangePriceCategoryMapping> getDataExchangePriceMappings(UUID dataExchangeId) {
         return session.createQuery("""
-                FROM DataExchangePriceCategoryMappingState
+                FROM DataExchangePriceCategoryMapping
                 WHERE changeEndDate IS NULL
-                  AND dataExchangePriceCategoryMapping.dataExchange.id = :dataExchangeId
-                """, DataExchangePriceCategoryMappingState.class)
+                  AND dataExchange.id = :dataExchangeId
+                """, DataExchangePriceCategoryMapping.class)
                 .setParameter("dataExchangeId", dataExchangeId)
                 .list();
     }
