@@ -6,6 +6,7 @@ import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
@@ -19,7 +20,6 @@ import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
-import nl.vng.diwi.services.export.OwnershipCategory;
 
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.geojson.Crs;
@@ -237,7 +237,7 @@ public class EsriZuidHollandExport {
                     for (var h : houseblockExportModels) {
                         for (var o : h.getOwnershipValueList()) {
                             if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
-                                (o.getOwnershipCategory() == OwnershipCategory.huur1 || o.getOwnershipCategory() == OwnershipCategory.huur2)) {
+                                (o.getOwnershipCategory() == OwnershipCategory.HUUR1 || o.getOwnershipCategory() == OwnershipCategory.HUUR2)) {
                                 if (h.getMutationKind() == MutationType.CONSTRUCTION) {
                                     phShor3Val += o.getAmount();
                                 } else {
@@ -252,7 +252,7 @@ public class EsriZuidHollandExport {
                     int phShor4Val = 0;
                     for (var h : houseblockExportModels) {
                         for (var o : h.getOwnershipValueList()) {
-                            if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE && o.getOwnershipCategory() == OwnershipCategory.huur3 ) {
+                            if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE && o.getOwnershipCategory() == OwnershipCategory.HUUR3 ) {
                                 if (h.getMutationKind() == MutationType.CONSTRUCTION) {
                                     phShor4Val += o.getAmount();
                                 } else {

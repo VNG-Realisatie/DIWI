@@ -16,6 +16,7 @@ import org.locationtech.proj4j.ProjCoordinate;
 
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategory;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategoryPeriod;
@@ -99,27 +100,27 @@ public class ExportUtil {
             Map<OwnershipCategory, Long> priceCategoryMap) {
         if (ownershipType == OwnershipType.KOOPWONING) {
             if (priceValue == null) {
-                return OwnershipCategory.koop_onb;
-            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.koop2)) {
-                return OwnershipCategory.koop1;
-            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.koop3)) {
-                return OwnershipCategory.koop2;
-            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.koop4)) {
-                return OwnershipCategory.koop3;
+                return OwnershipCategory.KOOP_ONB;
+            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.KOOP2)) {
+                return OwnershipCategory.KOOP1;
+            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.KOOP3)) {
+                return OwnershipCategory.KOOP2;
+            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.KOOP4)) {
+                return OwnershipCategory.KOOP3;
             } else {
-                return OwnershipCategory.koop4;
+                return OwnershipCategory.KOOP4;
             }
         } else {
             if (priceValue == null) {
-                return OwnershipCategory.huur_onb;
-            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.huur2)) {
-                return OwnershipCategory.huur1;
-            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.huur3)) {
-                return OwnershipCategory.huur2;
-            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.huur4)) {
-                return OwnershipCategory.huur3;
+                return OwnershipCategory.HUUR_ONB;
+            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.HUUR2)) {
+                return OwnershipCategory.HUUR1;
+            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.HUUR3)) {
+                return OwnershipCategory.HUUR2;
+            } else if (priceValue < priceCategoryMap.get(OwnershipCategory.HUUR4)) {
+                return OwnershipCategory.HUUR3;
             } else {
-                return OwnershipCategory.huur4;
+                return OwnershipCategory.HUUR4;
             }
         }
     }
@@ -138,17 +139,17 @@ public class ExportUtil {
         if (cat1 == cat2) {
             return cat1;
         } else if (ownershipType == OwnershipType.KOOPWONING &&
-                cat1 == OwnershipCategory.koop4 &&
-                cat2 == OwnershipCategory.koop_onb) {
+                cat1 == OwnershipCategory.KOOP4 &&
+                cat2 == OwnershipCategory.KOOP_ONB) {
             return cat1;
         } else if ((ownershipType == OwnershipType.HUURWONING_WONINGCORPORATIE || ownershipType == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) &&
-                cat1 == OwnershipCategory.huur4 &&
-                cat2 == OwnershipCategory.huur_onb) {
+                cat1 == OwnershipCategory.HUUR4 &&
+                cat2 == OwnershipCategory.HUUR_ONB) {
             return cat1;
         } else {
             errors.add(new DataExchangeExportError(projectUuid, houseblockUuid, EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR, cat1, cat2, priceValueMin,
                     priceValueMax));
-            return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.koop_onb : OwnershipCategory.huur_onb;
+            return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.KOOP_ONB : OwnershipCategory.HUUR_ONB;
         }
     }
 
@@ -157,9 +158,9 @@ public class ExportUtil {
             Long priceValue,
             PriceCategoryPeriod pcp) {
         if (ownershipType == OwnershipType.KOOPWONING) {
-            return getOwnershipCategoryFromList(priceValue, pcp.getCategoriesBuy(), OwnershipCategory.koop_onb);
+            return getOwnershipCategoryFromList(priceValue, pcp.getCategoriesBuy(), OwnershipCategory.KOOP_ONB);
         } else {
-            return getOwnershipCategoryFromList(priceValue, pcp.getCategoriesRent(), OwnershipCategory.huur_onb);
+            return getOwnershipCategoryFromList(priceValue, pcp.getCategoriesRent(), OwnershipCategory.HUUR_ONB);
         }
     }
 
@@ -193,12 +194,12 @@ public class ExportUtil {
         if (cat1 == cat2) {
             return cat1;
         } else if (ownershipType == OwnershipType.KOOPWONING &&
-                cat1 == OwnershipCategory.koop4 &&
-                cat2 == OwnershipCategory.koop_onb) {
+                cat1 == OwnershipCategory.KOOP4 &&
+                cat2 == OwnershipCategory.KOOP_ONB) {
             return cat1;
         } else if ((ownershipType == OwnershipType.HUURWONING_WONINGCORPORATIE || ownershipType == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) &&
-                cat1 == OwnershipCategory.huur4 &&
-                cat2 == OwnershipCategory.huur_onb) {
+                cat1 == OwnershipCategory.HUUR4 &&
+                cat2 == OwnershipCategory.HUUR_ONB) {
             return cat1;
         } else {
             errors.add(new DataExchangeExportError(
@@ -209,7 +210,7 @@ public class ExportUtil {
                     cat2,
                     priceValueMin,
                     priceValueMax));
-            return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.koop_onb : OwnershipCategory.huur_onb;
+            return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.KOOP_ONB : OwnershipCategory.HUUR_ONB;
         }
     }
 }

@@ -40,6 +40,7 @@ import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
@@ -58,7 +59,6 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.ExportUtil.OwnershipValueModel;
-import nl.vng.diwi.services.export.OwnershipCategory;
 import nl.vng.diwi.services.export.gelderland.GelderlandConstants.DetailPlanningHeaders;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandHouseblockProps;
 
@@ -364,7 +364,7 @@ public class GdbGelderlandExport {
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
                     aantal_huurwoningen_corporatie += o.getOwnershipAmount();
 
-                    if (model.getOwnershipCategory() == OwnershipCategory.huur3) {
+                    if (model.getOwnershipCategory() == OwnershipCategory.HUUR3) {
                         aantal_middenhuur_corporatie += bouwFactor * model.getAmount();
                     }
                 }
@@ -509,7 +509,7 @@ public class GdbGelderlandExport {
                                 && r.getId().equals(o.getOwnershipRangeCategoryId()))
                         .findFirst().orElse(null);
                 if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                    oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
                 } else {
                     oModel.setOwnershipCategory(getOwnershipCategory(
                             projectUuid,
@@ -521,7 +521,7 @@ public class GdbGelderlandExport {
                             errors));
                 }
             } else {
-                oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
             }
         } else {
             if (o.getOwnershipRentalValue() != null) {
@@ -543,7 +543,7 @@ public class GdbGelderlandExport {
                                 && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
                         .findFirst().orElse(null);
                 if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                    oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
                 } else {
                     oModel.setOwnershipCategory(
                             getOwnershipCategory(projectUuid,
@@ -555,7 +555,7 @@ public class GdbGelderlandExport {
                                     errors));
                 }
             } else {
-                oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
             }
         }
         return oModel;

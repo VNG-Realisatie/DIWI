@@ -20,6 +20,7 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
 import nl.vng.diwi.dal.entities.DataExchangeOptionState;
+import nl.vng.diwi.dal.entities.DataExchangePriceCategoryMapping;
 import nl.vng.diwi.dal.entities.DataExchangeProperty;
 import nl.vng.diwi.dal.entities.DataExchangePropertySqlModel;
 import nl.vng.diwi.dal.entities.DataExchangePropertyState;
@@ -69,9 +70,15 @@ public class DataExchangeService {
         }
 
         DataExchangeModel model = new DataExchangeModel(state, includeApiKey);
-        List<DataExchangePropertySqlModel> dxSqlProperties = repo.getDataExchangeDAO().getDataExchangeProperties(dataExchangeId);
+
+        List<DataExchangePropertySqlModel> dxSqlProperties = repo
+                .getDataExchangeDAO()
+                .getDataExchangeProperties(dataExchangeId);
         dxSqlProperties.forEach(sqlProp -> model.getProperties().add(new DataExchangePropertyModel(sqlProp)));
 
+        for (var mapping : repo.getDataExchangeDAO().getDataExchangePriceMappings(dataExchangeId)) {
+
+        }
         return model;
     }
 
@@ -82,19 +89,20 @@ public class DataExchangeService {
 
         createDataExchangeState(repo, dataExchange.getId(), model, zdtNow, loggedUserUuid, false);
 
-        createDataExchangeTemplate(repo, dataExchange, model.getType());
+        DataExchangeTemplate template = DataExchangeTemplate.templates.get(model.getType());
+
+        if (template == null) {
+            throw new VngServerErrorException("Template for type " + model.getType() + " is not defined.");
+        }
+
+        createDataExchangeFromTemplate(repo, dataExchange, template);
 
         return dataExchange.getId();
 
     }
 
-    private void createDataExchangeTemplate(VngRepository repo, DataExchange dataExchange, DataExchangeType type) {
+    public void createDataExchangeFromTemplate(VngRepository repo, DataExchange dataExchange, DataExchangeTemplate template) {
 
-        DataExchangeTemplate template = DataExchangeTemplate.templates.get(type);
-
-        if (template == null) {
-            throw new VngServerErrorException("Template for type " + type.name() + " is not defined.");
-        }
         template.getProperties().forEach(prop -> {
             DataExchangeProperty dxProp = new DataExchangeProperty();
             dxProp.setDataExchange(dataExchange);
@@ -114,6 +122,13 @@ public class DataExchangeService {
                 });
             }
         });
+
+        for (var cat : template.getPriceCategoryMappings()) {
+            var mapping = new DataExchangePriceCategoryMapping();
+            mapping.setDataExchange(dataExchange);
+            mapping.setOwnershipCategory(cat);
+            repo.persist(mapping);
+        }
     }
 
     public void createDataExchangeState(VngRepository repo, UUID dataExchangeUuid,
@@ -150,7 +165,8 @@ public class DataExchangeService {
             var oldDxProperty = oldPropMap.get(dxProperty.getId());
             if (!Objects.equals(dxProperty.getCustomPropertyId(), oldDxProperty.getCustomPropertyId())) {
                 if (oldDxProperty.getCustomPropertyId() != null) {
-                    DataExchangePropertyState oldDxPropState = repo.getDataExchangeDAO().getActiveDataExchangePropertyStateByDataExchangePropertyUuid(dxProperty.getId());
+                    DataExchangePropertyState oldDxPropState = repo.getDataExchangeDAO()
+                            .getActiveDataExchangePropertyStateByDataExchangePropertyUuid(dxProperty.getId());
                     oldDxPropState.setChangeUser(loggedUser);
                     oldDxPropState.setChangeEndDate(now);
                     repo.persist(oldDxPropState);
@@ -172,11 +188,15 @@ public class DataExchangeService {
             }
             for (var oldDxOption : oldDxProperty.getOptions()) {
                 var newDxOption = dxProperty.getOptions().stream().filter(o -> o.getId().equals(oldDxOption.getId())).findFirst().orElse(null);
-                List<DataExchangeOptionState> optionStates = repo.getDataExchangeDAO().getActiveDataExchangeOptionsStatesByDataExchangeOptionUuid(oldDxOption.getId());
+                List<DataExchangeOptionState> optionStates = repo.getDataExchangeDAO()
+                        .getActiveDataExchangeOptionsStatesByDataExchangeOptionUuid(oldDxOption.getId());
                 optionStates.forEach(os -> {
                     if (newDxOption == null ||
-                        (os.getPropertyCategoryValue() != null && (newDxOption.getPropertyCategoryValueIds() == null || !newDxOption.getPropertyCategoryValueIds().contains(os.getPropertyCategoryValue().getId()))) ||
-                        (os.getPropertyOrdinalValue() != null && (newDxOption.getPropertyOrdinalValueIds() == null || !newDxOption.getPropertyOrdinalValueIds().contains(os.getPropertyOrdinalValue().getId())))) {
+                            (os.getPropertyCategoryValue() != null && (newDxOption.getPropertyCategoryValueIds() == null
+                                    || !newDxOption.getPropertyCategoryValueIds().contains(os.getPropertyCategoryValue().getId())))
+                            ||
+                            (os.getPropertyOrdinalValue() != null && (newDxOption.getPropertyOrdinalValueIds() == null
+                                    || !newDxOption.getPropertyOrdinalValueIds().contains(os.getPropertyOrdinalValue().getId())))) {
                         os.setChangeUser(loggedUser);
                         os.setChangeEndDate(now);
                         repo.persist(os);
@@ -248,7 +268,8 @@ public class DataExchangeService {
         final var templateMinConfidentiality = template.getMinimumConfidentiality();
 
         if (dxExportModel.getConfidentialityLevels() != null && !dxExportModel.getConfidentialityLevels().isEmpty()) {
-            var selectedMinConfidentiality = dxExportModel.getConfidentialityLevels().stream().min(Comparator.comparing(Confidentiality.confidentialityMap::get)).get();
+            var selectedMinConfidentiality = dxExportModel.getConfidentialityLevels().stream()
+                    .min(Comparator.comparing(Confidentiality.confidentialityMap::get)).get();
             if (Confidentiality.confidentialityMap.get(selectedMinConfidentiality) < Confidentiality.confidentialityMap.get(templateMinConfidentiality)) {
                 throw new VngBadRequestException(
                     "Selected minimum confidentiality (%s) is lower than the minimum confidentiality allowed by the export (%s)"
