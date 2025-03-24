@@ -334,7 +334,8 @@ export interface components {
             buy: components["schemas"]["PriceCategoryMapping"][];
         };
         PriceCategoryMapping: {
-            name: string;
+            /** @enum {string} */
+            name: "KOOP1" | "KOOP2" | "KOOP3" | "KOOP4" | "KOOP_ONB" | "HUUR1" | "HUUR2" | "HUUR3" | "HUUR4" | "HUUR_ONB";
             categoryValueIds: string[];
         };
         ValidationError: {
