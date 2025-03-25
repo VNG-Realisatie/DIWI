@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.StreamingOutput;
@@ -45,6 +44,7 @@ import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.export.ArcGisProjectExporter;
+import nl.vng.diwi.services.export.DataExchangeConfigForExport;
 import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.gelderland.GdbGelderlandExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
@@ -297,8 +297,7 @@ public class DataExchangeService {
             }
         }
 
-        Map<String, DataExchangePropertyModel> dxPropertiesMap = dataExchangeModel.getProperties().stream()
-                .collect(Collectors.toMap(DataExchangePropertyModel::getName, Function.identity()));
+        DataExchangeConfigForExport dataExchangeConfigForExport = new DataExchangeConfigForExport(dataExchangeModel);
 
         List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
@@ -306,7 +305,7 @@ public class DataExchangeService {
                 configModel,
                 repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser),
                 customProps,
-                dxPropertiesMap,
+                dataExchangeConfigForExport.getDxPropertiesMap(),
                 dxExportModel.getExportDate(),
                 templateMinConfidentiality,
                 errors);
@@ -320,9 +319,9 @@ public class DataExchangeService {
         case GDB_GELDERLAND -> GdbGelderlandExport.buildExportObject(
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps,
-                dxPropertiesMap,
-                dxExportModel.getExportDate(),
+                dataExchangeConfigForExport,
                 template,
+                dxExportModel.getExportDate(),
                 errors,
                 loggedUser);
         };

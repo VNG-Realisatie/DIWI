@@ -35,11 +35,14 @@ import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.generic.ResourceUtil;
+import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.DataExchangePropertyModel.DataExchangePropertyModelBuilder;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
+import nl.vng.diwi.services.export.DataExchangeConfigForExport;
 import nl.vng.diwi.testutil.ProjectsUtil;
 
 public class GdbGelderlandExportTest {
@@ -107,7 +110,7 @@ public class GdbGelderlandExportTest {
                 .build();
 
         var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
-        Map<String, DataExchangePropertyModel> dxPropertiesMap = template.getProperties().stream()
+        List<DataExchangePropertyModel> dxProperties = template.getProperties().stream()
                 .map(dxProp -> {
                     DataExchangePropertyModelBuilder builder = DataExchangePropertyModel.builder()
                             .name(dxProp.getName());
@@ -121,16 +124,21 @@ public class GdbGelderlandExportTest {
                     return null;
                 })
                 .filter(dxProp -> dxProp != null)
-                .collect(Collectors.toMap(DataExchangePropertyModel::getName, d -> d));
+                .toList();
+
+        var dxConfig = new DataExchangeConfigForExport(
+                DataExchangeModel.builder()
+                        .properties(dxProperties)
+                        .build());
 
         List<DataExchangeExportError> errors = new ArrayList<>();
 
         var result = GdbGelderlandExport.buildExportObject(
                 List.of(project),
                 customProps,
-                dxPropertiesMap,
-                exportDate,
+                dxConfig,
                 DataExchangeTemplate.gelderlandTemplate,
+                exportDate,
                 errors,
                 user);
 
@@ -273,7 +281,7 @@ public class GdbGelderlandExportTest {
                 .build();
 
         var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
-        Map<String, DataExchangePropertyModel> dxPropertiesMap = template.getProperties().stream()
+        List<DataExchangePropertyModel> dxProperties = template.getProperties().stream()
                 .map(dxProp -> {
                     DataExchangePropertyModelBuilder builder = DataExchangePropertyModel.builder()
                             .name(dxProp.getName());
@@ -287,15 +295,16 @@ public class GdbGelderlandExportTest {
                     return null;
                 })
                 .filter(dxProp -> dxProp != null)
-                .collect(Collectors.toMap(DataExchangePropertyModel::getName, d -> d));
+                .toList();
+        var dxConfig = new DataExchangeConfigForExport(
+                DataExchangeModel.builder()
+                        .properties(dxProperties)
+                        .build());
 
         List<DataExchangeExportError> errors = new ArrayList<>();
 
+        var ranges = new ArrayList<RangeSelectDisabledModel>();
 
-        PropertyModel priceRangeBuyFixedProp = customProps.stream()
-                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
-        PropertyModel priceRangeRentFixedProp = customProps.stream()
-                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT)).findFirst().orElse(null);
         PropertyModel municipalityFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
 
@@ -305,10 +314,9 @@ public class GdbGelderlandExportTest {
         var result = GdbGelderlandExport.getProjectFeature(
                 project,
                 customPropsMap,
-                priceRangeBuyFixedProp,
-                priceRangeRentFixedProp,
+                ranges,
                 municipalityFixedProp,
-                dxPropertiesMap,
+                dxConfig,
                 DataExchangeTemplate.gelderlandTemplate,
                 exportDate,
                 errors,

@@ -3,10 +3,12 @@ package nl.vng.diwi.services;
 import static nl.vng.diwi.dal.entities.enums.OwnershipCategory.HUUR_ONB;
 import static nl.vng.diwi.dal.entities.enums.OwnershipCategory.KOOP1;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;

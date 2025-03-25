@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static nl.vng.diwi.dal.entities.enums.OwnershipCategory.HUUR1;
-import static nl.vng.diwi.dal.entities.enums.OwnershipCategory.KOOP1;
 import static org.assertj.core.api.Assertions.*;
 
-import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.assertj.core.groups.Tuple;
 import org.hibernate.Session;
 import org.junit.jupiter.api.AfterAll;
