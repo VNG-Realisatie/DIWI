@@ -67,6 +67,7 @@ public class DataExchangeDAO extends AbstractRepository {
     }
 
     public List<DataExchangePriceCategoryMapping> getDataExchangePriceMappings(UUID dataExchangeId) {
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
         return session.createQuery("""
                 FROM DataExchangePriceCategoryMapping pcm
                 LEFT JOIN FETCH pcm.mappings pcms

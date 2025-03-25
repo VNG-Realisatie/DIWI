@@ -277,10 +277,10 @@ public class DataExchangeService {
                 if (!oldMappings.containsKey(newMapping.getKey())) {
                     // This one needs to be added to the database
                     var newEntity = new DataExchangePriceCategoryMappingState();
-                    newEntity.withDataExchangePriceCategoryMapping(dbMappings.get(newMapping.getValue()));
-                    newEntity.withPriceRange(repo.getReferenceById(PropertyRangeCategoryValue.class, newMapping.getKey()));
+                    newEntity.setDataExchangePriceCategoryMapping(dbMappings.get(newMapping.getValue()));
+                    newEntity.setPriceRange(repo.getReferenceById(PropertyRangeCategoryValue.class, newMapping.getKey()));
                     newEntity.setChangeStartDate(now);
-                    newEntity.setChangeUser(loggedUser);
+                    newEntity.setCreateUser(loggedUser);
                     repo.persist(newEntity);
                 }
             }
