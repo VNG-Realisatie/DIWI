@@ -2,6 +2,7 @@ package nl.vng.diwi.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
@@ -27,6 +28,7 @@ import static nl.vng.diwi.dal.entities.enums.PropertyType.ORDINAL;
 
 @Data
 @With
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataExchangeModel {
@@ -46,11 +48,14 @@ public class DataExchangeModel {
     @NoArgsConstructor
     @AllArgsConstructor
     @With
+    @Builder
     public static class PriceCategories {
         @JsonProperty(required = true)
+        @Builder.Default
         List<PriceCategoryMapping> rent = new ArrayList<>();
 
         @JsonProperty(required = true)
+        @Builder.Default
         List<PriceCategoryMapping> buy = new ArrayList<>();
     }
 
@@ -75,8 +80,13 @@ public class DataExchangeModel {
 
     private Boolean valid;
 
+    /**
+     * If this value is set user can directly map price categories in diwi to the price categories for exports.
+     * Not available for all exports, so can be null
+     */
     private PriceCategories priceCategories;
 
+    @Builder.Default
     private List<DataExchangePropertyModel> properties = new ArrayList<>();
 
     private List<ValidationError> validationErrors;
@@ -96,6 +106,7 @@ public class DataExchangeModel {
 
         this.setMinimumConfidentiality(template.getMinimumConfidentiality());
         this.setClientId(dataExchangeState.getClientId());
+        this.setProperties(new ArrayList<>());
     }
 
     public String validateDxState() {

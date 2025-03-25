@@ -4,7 +4,6 @@ import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_MANDATORY_VALUE;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MULTIPLE_SINGLE_SELECT_VALUES;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.NUMERIC_RANGE_VALUE;
-import static nl.vng.diwi.services.export.ExportUtil.getOwnershipCategory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +45,6 @@ import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
-import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategoryPeriod;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.TemplateProperty;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
@@ -57,8 +55,8 @@ import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
+import nl.vng.diwi.services.export.DataExchangeConfigForExport;
 import nl.vng.diwi.services.export.ExportUtil;
-import nl.vng.diwi.services.export.ExportUtil.OwnershipValueModel;
 import nl.vng.diwi.services.export.gelderland.GelderlandConstants.DetailPlanningHeaders;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandHouseblockProps;
 
@@ -131,9 +129,9 @@ public class GdbGelderlandExport {
     public static StreamingOutput buildExportObject(
             List<ProjectExportSqlModelExtended> projects,
             List<PropertyModel> customProps,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap,
-            LocalDate exportDate,
+            DataExchangeConfigForExport dataExchangeConfigForExport,
             DataExchangeTemplate template,
+            LocalDate exportDate,
             List<DataExchangeExportError> errors,
             LoggedUser user) {
         FeatureCollection exportObject = new FeatureCollection();
@@ -147,6 +145,14 @@ public class GdbGelderlandExport {
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
         PropertyModel priceRangeRentFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT)).findFirst().orElse(null);
+        var ranges = new ArrayList<RangeSelectDisabledModel>();
+        if (priceRangeBuyFixedProp != null) {
+            ranges.addAll(priceRangeBuyFixedProp.getRanges());
+        }
+        if (priceRangeRentFixedProp != null) {
+            ranges.addAll(priceRangeRentFixedProp.getRanges());
+        }
+
         PropertyModel municipalityFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
 
@@ -163,10 +169,9 @@ public class GdbGelderlandExport {
                     ProjectExportData projectExportData = getProjectFeature(
                             project,
                             customPropsMap,
-                            priceRangeBuyFixedProp,
-                            priceRangeRentFixedProp,
+                            ranges,
                             municipalityFixedProp,
-                            dxPropertiesMap,
+                            dataExchangeConfigForExport,
                             template,
                             exportDate,
                             errors,
@@ -201,10 +206,9 @@ public class GdbGelderlandExport {
     public static ProjectExportData getProjectFeature(
             ProjectExportSqlModelExtended project,
             Map<UUID, PropertyModel> customPropsMap,
-            PropertyModel priceRangeBuyFixedProp,
-            PropertyModel priceRangeRentFixedProp,
+            List<RangeSelectDisabledModel> ranges,
             PropertyModel municipalityFixedProp,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap,
+            DataExchangeConfigForExport dxConfig,
             DataExchangeTemplate template,
             LocalDate exportDate,
             List<DataExchangeExportError> errors,
@@ -243,9 +247,9 @@ public class GdbGelderlandExport {
         var sums = calculateAggregations(
                 project,
                 exportDate,
-                priceRangeBuyFixedProp,
-                priceRangeRentFixedProp,
+                ranges,
                 detailYearMap,
+                dxConfig,
                 template,
                 errors);
 
@@ -273,11 +277,11 @@ public class GdbGelderlandExport {
 
         for (var templateProperty : DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND).getProperties()) {
             var prop = templateProperty.getName();
-            DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(prop);
+            DataExchangePropertyModel dxPropertyModel = dxConfig.getDxProp(prop);
             addMappedProperty(
                     project,
                     customPropsMap,
-                    dxPropertiesMap,
+                    dxConfig,
                     errors,
                     feature,
                     projectTextCustomProps,
@@ -295,8 +299,8 @@ public class GdbGelderlandExport {
                 .map(h -> new GdbGelderlandHouseblockExportModel(
                         project.getProjectId(),
                         h,
-                        priceRangeBuyFixedProp,
-                        priceRangeRentFixedProp,
+                        ranges,
+                        dxConfig,
                         template,
                         errors))
                 .toList();
@@ -328,37 +332,37 @@ public class GdbGelderlandExport {
     private static Map<String, Object> calculateAggregations(
             ProjectExportSqlModelExtended project,
             LocalDate exportDate,
-            PropertyModel priceRangeBuyFixedProp,
-            PropertyModel priceRangeRentFixedProp,
+            List<RangeSelectDisabledModel> ranges,
             Map<Integer, Map<String, Object>> detailYearMap,
+            DataExchangeConfigForExport dxConfig,
             DataExchangeTemplate template,
             List<DataExchangeExportError> errors) {
         int aantal_huurwoningen_corporatie = 0;
         int aantal_middenhuur_corporatie = 0;
 
-        for (var b : project.getHouseblocks()) {
-            var detailMap = detailYearMap.computeIfAbsent(b.getDeliveryYear(), GdbGelderlandExport::createEmptyDetailPlanningMap);
-            detailMap.put("GlobalID", b.getHouseblockId().toString());
+        for (var block : project.getHouseblocks()) {
+            var detailMap = detailYearMap.computeIfAbsent(block.getDeliveryYear(), GdbGelderlandExport::createEmptyDetailPlanningMap);
+            detailMap.put("GlobalID", block.getHouseblockId().toString());
 
-            final boolean bouw = b.getMutationKind() == MutationType.CONSTRUCTION;
+            final boolean bouw = block.getMutationKind() == MutationType.CONSTRUCTION;
             final int bouwFactor = bouw ? 1 : -1;
 
             // This assumes the periods are ordered from old to new
             var priceCategoriesForPeriod = template.getPriceCategoryPeriods()
                     .stream()
-                    .filter(pcp -> pcp.getValidUntil() == null || pcp.getValidUntil().isAfter(b.getEndDate()))
+                    .filter(pcp -> pcp.getValidUntil() == null || pcp.getValidUntil().isAfter(block.getEndDate()))
                     .findFirst()
                     .orElseThrow();
 
             // totals for ownership
-            for (var o : b.getOwnershipValueList()) {
-                var model = createOwnershipValueModel(
+            for (var o : block.getOwnershipValueList()) {
+                var model = ExportUtil.createOwnershipValueModel(
                         project.getProjectId(),
-                        b,
-                        priceRangeBuyFixedProp,
-                        priceRangeRentFixedProp,
+                        block,
+                        ranges,
                         errors,
                         priceCategoriesForPeriod,
+                        dxConfig,
                         o);
 
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
@@ -479,95 +483,13 @@ public class GdbGelderlandExport {
         };
     }
 
-    static private OwnershipValueModel createOwnershipValueModel(
-            UUID projectUuid,
-            ProjectExportSqlModelExtended.HouseblockExportSqlModel sqlModel,
-            PropertyModel priceRangeBuyFixedProp,
-            PropertyModel priceRangeRentFixedProp,
-            List<DataExchangeExportError> errors,
-            PriceCategoryPeriod pcp,
-            ProjectExportSqlModelExtended.OwnershipValueSqlModel o) {
-        OwnershipValueModel oModel = new OwnershipValueModel();
-        oModel.setOwnershipType(o.getOwnershipType());
-        oModel.setAmount(o.getOwnershipAmount());
-        if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
-            if (o.getOwnershipValue() != null) {
-                oModel.setOwnershipCategory(
-                        getOwnershipCategory(o.getOwnershipType(), o.getOwnershipValue(), pcp));
-            } else if (o.getOwnershipValueRangeMin() != null || o.getOwnershipValueRangeMax() != null) {
-                oModel.setOwnershipCategory(getOwnershipCategory(
-                        projectUuid,
-                        sqlModel.getHouseblockId(),
-                        o.getOwnershipType(),
-                        o.getOwnershipValueRangeMin(),
-                        o.getOwnershipValueRangeMax(),
-                        pcp,
-                        errors));
-            } else if (o.getOwnershipRangeCategoryId() != null) {
-                RangeSelectDisabledModel rangeOption = priceRangeBuyFixedProp.getRanges().stream()
-                        .filter(r -> r.getDisabled() == Boolean.FALSE
-                                && r.getId().equals(o.getOwnershipRangeCategoryId()))
-                        .findFirst().orElse(null);
-                if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
-                } else {
-                    oModel.setOwnershipCategory(getOwnershipCategory(
-                            projectUuid,
-                            sqlModel.getHouseblockId(),
-                            o.getOwnershipType(),
-                            rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),
-                            rangeOption.getMax() == null ? null : rangeOption.getMax().longValue(),
-                            pcp,
-                            errors));
-                }
-            } else {
-                oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
-            }
-        } else {
-            if (o.getOwnershipRentalValue() != null) {
-                oModel.setOwnershipCategory(
-                        getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue(), pcp));
-            } else if (o.getOwnershipRentalValueRangeMin() != null || o.getOwnershipRentalValueRangeMax() != null) {
-                oModel.setOwnershipCategory(
-                        getOwnershipCategory(
-                                projectUuid,
-                                sqlModel.getHouseblockId(),
-                                o.getOwnershipType(),
-                                o.getOwnershipRentalValueRangeMin(),
-                                o.getOwnershipRentalValueRangeMax(),
-                                pcp,
-                                errors));
-            } else if (o.getOwnershipRentalRangeCategoryId() != null) {
-                RangeSelectDisabledModel rangeOption = priceRangeRentFixedProp.getRanges().stream()
-                        .filter(r -> r.getDisabled() == Boolean.FALSE
-                                && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
-                        .findFirst().orElse(null);
-                if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
-                } else {
-                    oModel.setOwnershipCategory(
-                            getOwnershipCategory(projectUuid,
-                                    sqlModel.getHouseblockId(),
-                                    o.getOwnershipType(),
-                                    rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),
-                                    rangeOption.getMax() == null ? null : rangeOption.getMax().longValue(),
-                                    pcp,
-                                    errors));
-                }
-            } else {
-                oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
-            }
-        }
-        return oModel;
-    }
-
     /*
      * TODO: Needs to be deduplicated with the version in pzh
      */
     public static void addMappedProperty(
             ProjectExportSqlModelExtended project,
             Map<UUID, PropertyModel> customPropsMap,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap,
+            DataExchangeConfigForExport dataExchangeConfigForExport,
             List<DataExchangeExportError> errors,
             Feature projectFeature,
             Map<UUID, String> projectTextCustomProps,
@@ -582,9 +504,10 @@ public class GdbGelderlandExport {
         } else if (templateProperty.getPropertyTypes().contains(PropertyType.TEXT)) {
             // If it accepts a text property it should be able to map a category to it
             if (projectTextCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
-                addProjectTextCustomProperty(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap, projectTextCustomProps, errors);
+                addProjectTextCustomProperty(project.getProjectId(), projectFeature, templateProperty, dataExchangeConfigForExport, projectTextCustomProps,
+                        errors);
             } else if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
-                addProjectCategoricalCustomPropertyAsText(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap,
+                addProjectCategoricalCustomPropertyAsText(project.getProjectId(), projectFeature, templateProperty, dataExchangeConfigForExport,
                         projectCategoricalCustomProps, customPropsMap, errors);
             } else {
                 projectFeature.getProperties().put(propName, null);
@@ -594,7 +517,7 @@ public class GdbGelderlandExport {
                     project.getProjectId(),
                     projectFeature,
                     templateProperty,
-                    dxPropertiesMap,
+                    dataExchangeConfigForExport,
                     projectNumericCustomProps,
                     errors);
         } else if (templateProperty.getPropertyTypes().containsAll(List.of(PropertyType.CATEGORY))) {
@@ -602,7 +525,7 @@ public class GdbGelderlandExport {
                     project.getProjectId(),
                     projectFeature,
                     templateProperty,
-                    dxPropertiesMap,
+                    dataExchangeConfigForExport,
                     projectCategoricalCustomProps,
                     errors);
         } else {
@@ -611,9 +534,9 @@ public class GdbGelderlandExport {
     }
 
     private static void addProjectTextCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, String> projectTextCustomProps,
+            DataExchangeConfigForExport dataExchangeConfigForExport, Map<UUID, String> projectTextCustomProps,
             List<DataExchangeExportError> errors) {
-        DataExchangePropertyModel dataExchangePropertyModel = dxPropertiesMap.get(templateProperty.getName());
+        DataExchangePropertyModel dataExchangePropertyModel = dataExchangeConfigForExport.getDxProp(templateProperty.getName());
         UUID customPropUuid = dataExchangePropertyModel.getCustomPropertyId();
         String ezhValue = null;
         if (customPropUuid == null) {
@@ -629,9 +552,9 @@ public class GdbGelderlandExport {
     }
 
     private static void addProjectCategoricalCustomPropertyAsText(UUID projectUuid, Feature projectFeature, TemplateProperty templateProperty,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, List<UUID>> projectCategoricalCustomProps,
+            DataExchangeConfigForExport dataExchangeConfigForExport, Map<UUID, List<UUID>> projectCategoricalCustomProps,
             Map<UUID, PropertyModel> customPropsMap, List<DataExchangeExportError> errors) {
-        DataExchangePropertyModel dataExchangePropertyModel = dxPropertiesMap.get(templateProperty.getName());
+        DataExchangePropertyModel dataExchangePropertyModel = dataExchangeConfigForExport.getDxProp(templateProperty.getName());
         UUID customPropUuid = dataExchangePropertyModel.getCustomPropertyId();
         String ezhValue = null;
         if (customPropUuid == null) {
@@ -651,9 +574,9 @@ public class GdbGelderlandExport {
     }
 
     private static void addProjectCategoricalCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, List<UUID>> projectCategoricalCustomProps,
+            DataExchangeConfigForExport dataExchangeConfigForExport, Map<UUID, List<UUID>> projectCategoricalCustomProps,
             List<DataExchangeExportError> errors) {
-        DataExchangePropertyModel dataExchangePropertyModel = dxPropertiesMap.get(templateProperty.getName());
+        DataExchangePropertyModel dataExchangePropertyModel = dataExchangeConfigForExport.getDxProp(templateProperty.getName());
         List<String> ezhValue = new ArrayList<>();
         if (dataExchangePropertyModel == null) {
             errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
@@ -683,9 +606,9 @@ public class GdbGelderlandExport {
     }
 
     private static BigDecimal addProjectNumericCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps,
+            DataExchangeConfigForExport dataExchangeConfigForExport, Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps,
             List<DataExchangeExportError> errors) {
-        DataExchangePropertyModel dataExchangePropertyModel = dxPropertiesMap.get(templateProperty.getName());
+        DataExchangePropertyModel dataExchangePropertyModel = dataExchangeConfigForExport.getDxProp(templateProperty.getName());
         UUID customPropUuid = dataExchangePropertyModel.getCustomPropertyId();
         BigDecimal ezhValue = null;
         if (customPropUuid == null) {
