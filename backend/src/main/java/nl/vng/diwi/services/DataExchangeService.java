@@ -88,11 +88,11 @@ public class DataExchangeService {
             var mappingsModel = new PriceCategories();
             for (var mapping : dataExchangePriceMappings) {
                 OwnershipCategory ownershipCategory = mapping.getOwnershipCategory();
-                var cats = mapping.getMappings().stream().map(m -> m.getPriceRange().getId()).toList();
+                var priceRangeIds = mapping.getMappings().stream().map(m -> m.getPriceRange().getId()).toList();
                 if (ownershipCategory.getType() == OwnershipCategory.Type.BUY) {
-                    mappingsModel.getBuy().add(new PriceCategoryMapping(ownershipCategory, cats));
+                    mappingsModel.getBuy().add(new PriceCategoryMapping(ownershipCategory, priceRangeIds));
                 } else if (ownershipCategory.getType() == OwnershipCategory.Type.RENT) {
-                    mappingsModel.getRent().add(new PriceCategoryMapping(ownershipCategory, cats));
+                    mappingsModel.getRent().add(new PriceCategoryMapping(ownershipCategory, priceRangeIds));
                 }
             }
             model.setPriceCategories(mappingsModel);
