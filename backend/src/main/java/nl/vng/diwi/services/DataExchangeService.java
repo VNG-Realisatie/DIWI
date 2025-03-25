@@ -3,6 +3,7 @@ package nl.vng.diwi.services;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,6 +20,7 @@ import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
 import nl.vng.diwi.dal.entities.DataExchangeOptionState;
 import nl.vng.diwi.dal.entities.DataExchangePriceCategoryMapping;
+import nl.vng.diwi.dal.entities.DataExchangePriceCategoryMappingState;
 import nl.vng.diwi.dal.entities.DataExchangeProperty;
 import nl.vng.diwi.dal.entities.DataExchangePropertySqlModel;
 import nl.vng.diwi.dal.entities.DataExchangePropertyState;
@@ -27,6 +29,7 @@ import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
+import nl.vng.diwi.dal.entities.PropertyRangeCategoryValue;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
@@ -169,8 +172,11 @@ public class DataExchangeService {
         repo.persist(state);
     }
 
-    public void updateDataExchange(VngRepository repo, DataExchangeModel dataExchangeModel,
-            DataExchangeModel oldModel, ZonedDateTime now,
+    public void updateDataExchange(
+            VngRepository repo,
+            DataExchangeModel dataExchangeModel,
+            DataExchangeModel oldModel,
+            ZonedDateTime now,
             UUID loggedUserUuid) throws VngNotFoundException {
 
         User loggedUser = repo.getReferenceById(User.class, loggedUserUuid);
@@ -241,6 +247,57 @@ public class DataExchangeService {
                 }
             }
         }
+
+        if (dataExchangeModel.getPriceCategories() != null) {
+            var newMappings = new HashMap<UUID, OwnershipCategory>();
+            for (var newMapping : getAllMappings(dataExchangeModel)) {
+                for (var id : newMapping.getCategoryValueIds()) {
+                    newMappings.put(id, newMapping.getName());
+                }
+            }
+
+            var oldMappings = new HashMap<UUID, OwnershipCategory>();
+            var dbMappings = new HashMap<OwnershipCategory, DataExchangePriceCategoryMapping>();
+            for (var existingMappingsForCategory : repo.getDataExchangeDAO().getDataExchangePriceMappings(dataExchangeModel.getId())) {
+                dbMappings.put(existingMappingsForCategory.getOwnershipCategory(), existingMappingsForCategory);
+                for (var existingMapping : existingMappingsForCategory.getMappings()) {
+                    UUID priceRangeId = existingMapping.getPriceRange().getId();
+                    OwnershipCategory category = existingMappingsForCategory.getOwnershipCategory();
+                    if (newMappings.containsKey(priceRangeId)) {
+                        oldMappings.put(priceRangeId, category);
+                    } else {
+                        existingMapping.setChangeEndDate(now);
+                        existingMapping.setChangeUser(loggedUser);
+                        repo.persist(existingMapping);
+                    }
+                }
+            }
+
+            for (var newMapping : newMappings.entrySet()) {
+                if (!oldMappings.containsKey(newMapping.getKey())) {
+                    // This one needs to be added to the database
+                    var newEntity = new DataExchangePriceCategoryMappingState();
+                    newEntity.withDataExchangePriceCategoryMapping(dbMappings.get(newMapping.getValue()));
+                    newEntity.withPriceRange(repo.getReferenceById(PropertyRangeCategoryValue.class, newMapping.getKey()));
+                    newEntity.setChangeStartDate(now);
+                    newEntity.setChangeUser(loggedUser);
+                    repo.persist(newEntity);
+                }
+            }
+
+        }
+
+    }
+
+    private ArrayList<PriceCategoryMapping> getAllMappings(DataExchangeModel dataExchangeModel) {
+        var allMappings = new ArrayList<PriceCategoryMapping>();
+        if (dataExchangeModel.getPriceCategories().getBuy() != null) {
+            allMappings.addAll(dataExchangeModel.getPriceCategories().getBuy());
+        }
+        if (dataExchangeModel.getPriceCategories().getRent() != null) {
+            allMappings.addAll(dataExchangeModel.getPriceCategories().getRent());
+        }
+        return allMappings;
     }
 
     private void createDataExchangeOptionState(VngRepository repo, UUID optionId, UUID catValId, UUID ordValId, ZonedDateTime now, User loggedUser) {
