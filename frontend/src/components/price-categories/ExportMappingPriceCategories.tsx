@@ -38,7 +38,6 @@ const ExportMappingPriceCategories = ({ priceCategories, customProperties, setPr
                 />
 
                 {priceCategories[type].map((category, index) => {
-                    if (!customProperties[0].ranges) return;
 
                     const extendedCategory = {
                         ...category,
