@@ -77,8 +77,6 @@ public class GdbGelderlandExport {
             "huur_onb",
             "onbekend");
 
-    // private static final List<String> DESTROY_OR_BUILD = List.of("", "sloop_");
-
     static List<String> detailPlanningHeaders;
     static {
         detailPlanningHeaders = new ArrayList<>();
@@ -337,15 +335,68 @@ public class GdbGelderlandExport {
             DataExchangeConfigForExport dxConfig,
             DataExchangeTemplate template,
             List<DataExchangeExportError> errors) {
-        int aantal_huurwoningen_corporatie = 0;
+        int Totaal_aantal_huurwoningen_corporatie = 0;
+        int Totaal_bouw = 0;
+        int Totaal_gerealiseerd = 0;
+        int Totaal_resterend = 0;
+        int Totaal_sloop = 0;
+        int Totaal_sloop_gerealiseerd = 0;
+        int Totaal_sloop_resterend = 0;
+        int Totaal_netto = 0;
+        int Totaal_netto_gerealiseerd = 0;
+        int Totaal_netto_resterend = 0;
+        int Totaal_eengezins_resterend = 0;
+        int Totaal_meergezins_resterend = 0;
+        int Totaal_type_onbekend_resterend = 0;
+        int Totaal_koop_resterend = 0;
+        int Totaal_huur_resterend = 0;
+        int Totaal_koop_huur_onbekend_resterend = 0;
+        int Totaal_koop1 = 0;
+        int Totaal_koop2 = 0;
+        int Totaal_koop3 = 0;
+        int Totaal_koop4 = 0;
+        int Totaal_koop_onbekend = 0;
+        int Totaal_huur1 = 0;
+        int Totaal_huur2 = 0;
+        int Totaal_huur3 = 0;
+        int Totaal_huur4 = 0;
+        int Totaal_huur_onbekend = 0;
+        int Totaal_eigendom_onbekend = 0;
         int aantal_middenhuur_corporatie = 0;
 
         for (var block : project.getHouseblocks()) {
             var detailMap = detailYearMap.computeIfAbsent(block.getDeliveryYear(), GdbGelderlandExport::createEmptyDetailPlanningMap);
             detailMap.put("GlobalID", block.getHouseblockId().toString());
 
+            final boolean gerealiseerd = block.getEndDate().isBefore(exportDate);
             final boolean bouw = block.getMutationKind() == MutationType.CONSTRUCTION;
             final int bouwFactor = bouw ? 1 : -1;
+
+            // totals for construction and for house types (single family, etc)
+            if (bouw) {
+                Totaal_bouw += block.getMutationAmount();
+                if (gerealiseerd) {
+                    Totaal_gerealiseerd += block.getMutationAmount();
+                } else {
+                    int eengezinswoning = block.getEengezinswoning() == null ? 0 : block.getEengezinswoning();
+                    int meergezinswoning = block.getMeergezinswoning() == null ? 0 : block.getMeergezinswoning();
+
+                    Totaal_resterend += block.getMutationAmount();
+                    Totaal_meergezins_resterend += meergezinswoning;
+                    Totaal_eengezins_resterend += eengezinswoning;
+                    Totaal_type_onbekend_resterend = block.getMutationAmount() - meergezinswoning - eengezinswoning;
+                }
+            } else {
+                Totaal_sloop += block.getMutationAmount();
+                if (gerealiseerd) {
+                    Totaal_sloop_gerealiseerd += block.getMutationAmount();
+                } else {
+                    Totaal_sloop_resterend += block.getMutationAmount();
+                }
+            }
+
+            int huur_resterend = 0;
+            int koop_resterend = 0;
 
             // This assumes the periods are ordered from old to new
             var priceCategoriesForPeriod = template.getPriceCategoryPeriods()
@@ -365,47 +416,80 @@ public class GdbGelderlandExport {
                         dxConfig,
                         o);
 
+                switch (model.getOwnershipCategory()) {
+                case HUUR1 -> Totaal_huur1 += bouwFactor * model.getAmount();
+                case HUUR2 -> Totaal_huur2 += bouwFactor * model.getAmount();
+                case HUUR3 -> Totaal_huur3 += bouwFactor * model.getAmount();
+                case HUUR4 -> Totaal_huur4 += bouwFactor * model.getAmount();
+                case HUUR_ONB -> Totaal_huur_onbekend += bouwFactor * model.getAmount();
+
+                case KOOP1 -> Totaal_koop1 += bouwFactor * model.getAmount();
+                case KOOP2 -> Totaal_koop2 += bouwFactor * model.getAmount();
+                case KOOP3 -> Totaal_koop3 += bouwFactor * model.getAmount();
+                case KOOP4 -> Totaal_koop4 += bouwFactor * model.getAmount();
+                case KOOP_ONB -> Totaal_koop_onbekend += bouwFactor * model.getAmount();
+                }
+
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
-                    aantal_huurwoningen_corporatie += o.getOwnershipAmount();
+                    Totaal_aantal_huurwoningen_corporatie += o.getOwnershipAmount();
 
                     if (model.getOwnershipCategory() == OwnershipCategory.HUUR3) {
                         aantal_middenhuur_corporatie += bouwFactor * model.getAmount();
                     }
                 }
+
+                if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE
+                        || o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) {
+                    if (!gerealiseerd) {
+                        huur_resterend += bouwFactor * o.getOwnershipAmount();
+                        Totaal_huur_resterend += bouwFactor * o.getOwnershipAmount();
+                    }
+                } else if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
+                    if (!gerealiseerd) {
+                        koop_resterend += bouwFactor * o.getOwnershipAmount();
+                        Totaal_koop_resterend += bouwFactor * o.getOwnershipAmount();
+                    }
+                }
+            }
+            if (!gerealiseerd) {
+                int resterend = bouwFactor * block.getMutationAmount();
+                Totaal_koop_huur_onbekend_resterend += resterend - huur_resterend - koop_resterend;
             }
         }
 
-        var map = new HashMap<String, Object>();
-        map.put("aantal_middenhuur_corporatie", aantal_middenhuur_corporatie);
-        map.put("aantal_huurwoningen_corporatie", aantal_huurwoningen_corporatie);
+        Totaal_netto = Totaal_bouw - Totaal_sloop;
+        Totaal_netto_gerealiseerd = Totaal_gerealiseerd - Totaal_sloop_gerealiseerd;
+        Totaal_netto_resterend = Totaal_resterend - Totaal_sloop_resterend;
 
-        // The following values are calculated by Gelderland
-        map.put("Totaal_bouw", null);
-        map.put("Totaal_gerealiseerd", null);
-        map.put("Totaal_resterend", null);
-        map.put("Totaal_sloop", null);
-        map.put("Totaal_sloop_gerealiseerd", null);
-        map.put("Totaal_sloop_resterend", null);
-        map.put("Totaal_netto", null);
-        map.put("Totaal_netto_gerealiseerd", null);
-        map.put("Totaal_netto_resterend", null);
-        map.put("Totaal_eengezins_resterend", null);
-        map.put("Totaal_meergezins_resterend", null);
-        map.put("Totaal_type_onbekend_resterend", null);
-        map.put("Totaal_koop_resterend", null);
-        map.put("Totaal_huur_resterend", null);
-        map.put("Totaal_koop_huur_onbekend_resterend", null);
-        map.put("Totaal_koop1", null);
-        map.put("Totaal_koop2", null);
-        map.put("Totaal_koop3", null);
-        map.put("Totaal_koop4", null);
-        map.put("Totaal_koop_onbekend", null);
-        map.put("Totaal_huur1", null);
-        map.put("Totaal_huur2", null);
-        map.put("Totaal_huur3", null);
-        map.put("Totaal_huur4", null);
-        map.put("Totaal_huur_onbekend", null);
-        map.put("Totaal_eigendom_onbekend", null);
+        var map = new HashMap<String, Object>();
+        map.put("aantal_huurwoningen_corporatie", Totaal_aantal_huurwoningen_corporatie);
+        map.put("Totaal_bouw", Totaal_bouw);
+        map.put("Totaal_gerealiseerd", Totaal_gerealiseerd);
+        map.put("Totaal_resterend", Totaal_resterend);
+        map.put("Totaal_sloop", Totaal_sloop);
+        map.put("Totaal_sloop_gerealiseerd", Totaal_sloop_gerealiseerd);
+        map.put("Totaal_sloop_resterend", Totaal_sloop_resterend);
+        map.put("Totaal_netto", Totaal_netto);
+        map.put("Totaal_netto_gerealiseerd", Totaal_netto_gerealiseerd);
+        map.put("Totaal_netto_resterend", Totaal_netto_resterend);
+        map.put("Totaal_eengezins_resterend", Totaal_eengezins_resterend);
+        map.put("Totaal_meergezins_resterend", Totaal_meergezins_resterend);
+        map.put("Totaal_type_onbekend_resterend", Totaal_type_onbekend_resterend);
+        map.put("Totaal_koop_resterend", Totaal_koop_resterend);
+        map.put("Totaal_huur_resterend", Totaal_huur_resterend);
+        map.put("Totaal_koop_huur_onbekend_resterend", Totaal_koop_huur_onbekend_resterend);
+        map.put("Totaal_koop1", Totaal_koop1);
+        map.put("Totaal_koop2", Totaal_koop2);
+        map.put("Totaal_koop3", Totaal_koop3);
+        map.put("Totaal_koop4", Totaal_koop4);
+        map.put("Totaal_koop_onbekend", Totaal_koop_onbekend);
+        map.put("Totaal_huur1", Totaal_huur1);
+        map.put("Totaal_huur2", Totaal_huur2);
+        map.put("Totaal_huur3", Totaal_huur3);
+        map.put("Totaal_huur4", Totaal_huur4);
+        map.put("Totaal_huur_onbekend", Totaal_huur_onbekend);
+        map.put("Totaal_eigendom_onbekend", Totaal_eigendom_onbekend);
+        map.put("aantal_middenhuur_corporatie", aantal_middenhuur_corporatie);
 
         return map;
     }
