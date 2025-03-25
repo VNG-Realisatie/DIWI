@@ -71,6 +71,7 @@ public class DataExchangeDAO extends AbstractRepository {
                 FROM DataExchangePriceCategoryMapping pcm
                 LEFT JOIN FETCH pcm.mappings pcms
                 WHERE dataExchange.id = :dataExchangeId
+                ORDER BY ownershipCategory ASC
                 """, DataExchangePriceCategoryMapping.class)
                 .setParameter("dataExchangeId", dataExchangeId)
                 .list();
