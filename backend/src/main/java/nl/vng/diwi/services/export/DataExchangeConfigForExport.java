@@ -30,9 +30,11 @@ public class DataExchangeConfigForExport {
 
         PriceCategories priceCategories = dataExchangeModel.getPriceCategories();
         categoryOwnershipMap = new HashMap<>();
-        Stream.concat(priceCategories.getBuy().stream(), priceCategories.getRent().stream())
-                .forEach(pc -> pc.getCategoryValueIds()
-                        .forEach(id -> categoryOwnershipMap.put(id, pc.getName())));
+        if (priceCategories != null) {
+            Stream.concat(priceCategories.getBuy().stream(), priceCategories.getRent().stream())
+                    .forEach(pc -> pc.getCategoryValueIds()
+                            .forEach(id -> categoryOwnershipMap.put(id, pc.getName())));
+        }
     }
 
     public DataExchangePropertyModel getDxProp(String name) {
