@@ -1,4 +1,5 @@
 import { ConfidentialityLevel } from "../types/enums";
+import { components } from "../types/schema";
 import { getJson, postJson, putJson, deleteJson, downloadPost, postJsonParcedError } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
@@ -10,16 +11,7 @@ const exportTypeToFileExtension: { [key in ExportType]: string } = {
     GEO_JSON: "geojson",
     EXCEL: "xlsx",
 };
-
-export type GelderlandPriceCategory = {
-    name: string;
-    categoryValueIds: string[];
-};
-
-export type GelderlandPriceCategories = {
-    rent: GelderlandPriceCategory[];
-    buy: GelderlandPriceCategory[];
-};
+export type PriceCategories = components["schemas"]["PriceCategories"];
 
 export type PropertyOption = {
     id: string;
@@ -50,7 +42,7 @@ export type ExportData = {
     valid?: boolean;
     validationErrors?: ValidationError[];
     minimumConfidentiality?: ConfidentialityLevel;
-    priceCategories?: GelderlandPriceCategories;
+    priceCategories?: PriceCategories;
 };
 
 export type ValidationError = {

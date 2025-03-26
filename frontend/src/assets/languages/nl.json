@@ -381,8 +381,8 @@
         "geojson": "Importeren vanuit GeoJSON"
       },
       "priceCategories" : {
-        "rent" : "Prijscategorien huur",
-        "buy" : "Prijscategorien koop"
+        "rent" : "Prijscategorieën huur",
+        "buy" : "Prijscategorieën koop"
       },
       "validationErrors": {
         "missing_custom_prop": "Maatwerk eigenschap ontbreekt",

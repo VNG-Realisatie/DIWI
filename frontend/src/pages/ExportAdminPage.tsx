@@ -12,7 +12,7 @@ import {
     ValidationError,
     getExportTypes,
     ExportType,
-    GelderlandPriceCategories,
+    PriceCategories,
 } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
@@ -65,7 +65,7 @@ function ExportAdminPage() {
     const [exportTypes, setExportTypes] = useState<ExportType[]>([]);
     const [visibleOptions, setVisibleOptions] = useState<{ [key: string]: boolean }>({});
 
-    const [gelderlandPriceCategories, setGelderlandPriceCategories] = useState<GelderlandPriceCategories | undefined>();
+    const [exportPriceCategories, setExportPriceCategories] = useState<PriceCategories>();
 
     const toggleOptions = (propertyId: string) => {
         setVisibleOptions((prev) => ({
@@ -172,7 +172,7 @@ function ExportAdminPage() {
                 setFormData(formData);
                 setProperties(updatedProperties || []);
                 setType({ id: data.type as ExportType, name: t(`admin.export.${data.type}`) });
-                setGelderlandPriceCategories(priceCategories);
+                setExportPriceCategories(priceCategories);
             };
             fetchData();
         }
@@ -199,7 +199,7 @@ function ExportAdminPage() {
                 clientId: formData?.clientId,
                 projectUrl: formData?.projectUrl ?? "",
                 ...(id && { properties }),
-                priceCategories: gelderlandPriceCategories,
+                priceCategories: exportPriceCategories,
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setValidationErrors(data.validationErrors || []);
@@ -301,8 +301,8 @@ function ExportAdminPage() {
                 ))}
 
                 <ExportMappingPriceCategories
-                    priceCategories={gelderlandPriceCategories}
-                    setPriceCategories={setGelderlandPriceCategories}
+                    priceCategories={exportPriceCategories}
+                    setPriceCategories={setExportPriceCategories}
                     customProperties={customProperties}
                     mapPropertyToCustomDefinition={mapPropertyToCustomDefinition}
                 />
