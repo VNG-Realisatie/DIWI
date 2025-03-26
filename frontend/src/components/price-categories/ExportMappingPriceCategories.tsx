@@ -1,4 +1,4 @@
-import { ExportProperty, GelderlandPriceCategories } from "../../api/exportServices";
+import { ExportProperty, PriceCategories } from "../../api/exportServices";
 import { Property } from "../../api/adminSettingServices";
 import { Box, Grid } from "@mui/material";
 import { LabelComponent } from "../project/LabelComponent";
@@ -8,9 +8,9 @@ import { CustomPropertyWidget } from "../CustomPropertyWidget";
 import { ObjectType } from "../../types/enums";
 
 type Props = {
-    priceCategories: GelderlandPriceCategories | undefined;
+    priceCategories: PriceCategories | undefined;
     customProperties: Property[];
-    setPriceCategories: (priceCategories: GelderlandPriceCategories) => void;
+    setPriceCategories: (priceCategories: PriceCategories) => void;
     mapPropertyToCustomDefinition: (property: ExportProperty, selectedProperty: Property) => Property;
 };
 
