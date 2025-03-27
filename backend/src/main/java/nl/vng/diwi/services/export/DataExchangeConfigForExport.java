@@ -1,5 +1,6 @@
 package nl.vng.diwi.services.export;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +36,9 @@ public class DataExchangeConfigForExport {
                     .forEach(pc -> pc.getCategoryValueIds()
                             .forEach(id -> categoryOwnershipMap.put(id, pc.getName())));
         }
+
+        this.dxPropertiesMap = Collections.unmodifiableMap(dxPropertiesMap);
+        this.categoryOwnershipMap = Collections.unmodifiableMap(categoryOwnershipMap);
     }
 
     public DataExchangePropertyModel getDxProp(String name) {
