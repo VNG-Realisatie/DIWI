@@ -237,6 +237,14 @@ public class ExportUtil {
         oModel.setOwnershipType(type);
         oModel.setAmount(o.getOwnershipAmount());
 
+        final OwnershipCategory cat = determineOwnershipCategory(projectUuid, block, ranges, errors, priceCategoriesForPeriod, dxConfig, o, type);
+        oModel.setOwnershipCategory(cat);
+        return oModel;
+    }
+
+    private static OwnershipCategory determineOwnershipCategory(UUID projectUuid, HouseblockExportSqlModel block, List<RangeSelectDisabledModel> ranges,
+            List<DataExchangeExportError> errors, PriceCategoryPeriod priceCategoriesForPeriod, DataExchangeConfigForExport dxConfig, OwnershipValueSqlModel o,
+            OwnershipType type) {
         final OwnershipCategory cat;
         if (o.getValue() != null) {
             cat = getOwnershipCategory(type, o.getValue(), priceCategoriesForPeriod);
@@ -275,7 +283,6 @@ public class ExportUtil {
         } else {
             cat = type == OwnershipType.KOOPWONING ? KOOP_ONB : HUUR_ONB;
         }
-        oModel.setOwnershipCategory(cat);
-        return oModel;
+        return cat;
     }
 }
