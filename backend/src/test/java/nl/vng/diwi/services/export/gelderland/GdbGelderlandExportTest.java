@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -30,6 +29,7 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.generic.Constants;
@@ -42,6 +42,7 @@ import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
+import nl.vng.diwi.services.export.CustomPropsTool;
 import nl.vng.diwi.services.export.DataExchangeConfigForExport;
 import nl.vng.diwi.testutil.ProjectsUtil;
 
@@ -62,12 +63,14 @@ public class GdbGelderlandExportTest {
                         .name("text")
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
                         .build(),
                 PropertyModel.builder()
                         .id(UUID.randomUUID())
                         .name(PropertyType.NUMERIC.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.NUMERIC)
+                        .type(PropertyKind.CUSTOM)
                         .build());
 
         // Make it easy to find the custom prop
@@ -181,15 +184,24 @@ public class GdbGelderlandExportTest {
         List<PropertyModel> customProps = List.of(
                 PropertyModel.builder()
                         .id(UUID.randomUUID())
-                        .name("text")
+                        .name(PropertyType.TEXT.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
                         .build(),
                 PropertyModel.builder()
                         .id(UUID.randomUUID())
                         .name(PropertyType.NUMERIC.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.NUMERIC)
+                        .type(PropertyKind.CUSTOM)
+                        .build(),
+                        PropertyModel.builder()
+                        .id(UUID.randomUUID())
+                        .name(Constants.FIXED_PROPERTY_GEOMETRY)
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
                         .build());
 
         // Make it easy to find the custom prop
@@ -203,13 +215,14 @@ public class GdbGelderlandExportTest {
                 .creation_date(LocalDate.of(2025, 1, 1))
                 .last_edit_date(LocalDate.of(2025, 2, 1))
                 .endDate(LocalDate.of(2025, 12, 1))
-                .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
+                // .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
                 .projectPhase(ProjectPhase._5_PREPARATION)
                 .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
                 .planningPlanStatus(List.of(PlanStatus._2B_VASTGESTELD_MET_UITWERKING_NODIG))
                 .textProperties(List.of(
-                        new TextPropertyModel(customPropMap.get("text").getId(), "text_value")))
+                        new TextPropertyModel(customPropMap.get(PropertyType.TEXT.name()).getId(), "text_value"),
+                        new TextPropertyModel(customPropMap.get(Constants.FIXED_PROPERTY_GEOMETRY).getId(), ProjectsUtil.PLOT_JSON_STRING)))
                 .numericProperties(List.of(
                         new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
                 .houseblocks(List.of(
@@ -286,7 +299,7 @@ public class GdbGelderlandExportTest {
                     DataExchangePropertyModelBuilder builder = DataExchangePropertyModel.builder()
                             .name(dxProp.getName());
                     if (dxProp.getPropertyTypes().contains(PropertyType.TEXT)) {
-                        return builder.customPropertyId(customPropMap.get("text").getId())
+                        return builder.customPropertyId(customPropMap.get(PropertyType.TEXT.name()).getId())
                                 .build();
                     } else if (dxProp.getPropertyTypes().contains(PropertyType.NUMERIC)) {
                         return builder.customPropertyId(customPropMap.get(PropertyType.NUMERIC.name()).getId())
@@ -308,12 +321,10 @@ public class GdbGelderlandExportTest {
         PropertyModel municipalityFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
 
-        // Create a map from the custom property id to the custom property definition
-        Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
-
+        var customPropsTool = new CustomPropsTool(customProps);
         var result = GdbGelderlandExport.getProjectFeature(
                 project,
-                customPropsMap,
+                customPropsTool,
                 ranges,
                 municipalityFixedProp,
                 dxConfig,

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -29,7 +28,6 @@ import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
-import org.geojson.MultiPolygon;
 import org.geojson.jackson.CrsType;
 
 import jakarta.ws.rs.core.StreamingOutput;
@@ -55,6 +53,8 @@ import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
+import nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR;
+import nl.vng.diwi.services.export.CustomPropsTool;
 import nl.vng.diwi.services.export.DataExchangeConfigForExport;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.gelderland.GelderlandConstants.DetailPlanningHeaders;
@@ -139,6 +139,8 @@ public class GdbGelderlandExport {
         crs.getProperties().put("name", targetCrs);
         exportObject.setCrs(crs);
 
+        var customPropsTool = new CustomPropsTool(customProps);
+
         PropertyModel priceRangeBuyFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
         PropertyModel priceRangeRentFixedProp = customProps.stream()
@@ -154,8 +156,6 @@ public class GdbGelderlandExport {
         PropertyModel municipalityFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
 
-        Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
-
         try {
             var tempDir = Files.createTempDirectory("GdbGelderlandExport");
             var csvFile = new File(tempDir.toFile(), "DetailPlanning.csv");
@@ -166,7 +166,7 @@ public class GdbGelderlandExport {
                 for (var project : projects) {
                     ProjectExportData projectExportData = getProjectFeature(
                             project,
-                            customPropsMap,
+                            customPropsTool,
                             ranges,
                             municipalityFixedProp,
                             dataExchangeConfigForExport,
@@ -203,7 +203,7 @@ public class GdbGelderlandExport {
 
     public static ProjectExportData getProjectFeature(
             ProjectExportSqlModelExtended project,
-            Map<UUID, PropertyModel> customPropsMap,
+            CustomPropsTool customPropsTool,
             List<RangeSelectDisabledModel> ranges,
             PropertyModel municipalityFixedProp,
             DataExchangeConfigForExport dxConfig,
@@ -215,9 +215,30 @@ public class GdbGelderlandExport {
 
         Feature feature = new Feature();
 
-        MultiPolygon multiPolygon = ExportUtil.createPolygonForProject(project.getGeometries(), targetCrs, project.getProjectId());
+        Map<String, String> customProps = customPropsTool.getCustomPropertyMap(
+                project.getTextProperties(),
+                project.getNumericProperties(),
+                project.getBooleanProperties(),
+                project.getCategoryProperties(),
+                project.getOrdinalProperties());
+
+        List<String> geometries = new ArrayList<>();
+        if (project.getGeometries() != null) {
+            geometries.addAll(project.getGeometries());
+        }
+        var importGeometry = customProps.get(Constants.FIXED_PROPERTY_GEOMETRY);
+        if (importGeometry != null) {
+            geometries.add(importGeometry);
+        }
+        var multiPolygon = ExportUtil.createPolygonForProject(geometries, targetCrs, project.getProjectId());
         if (!multiPolygon.getCoordinates().isEmpty()) {
             feature.setGeometry(multiPolygon);
+        } else {
+            errors.add(DataExchangeExportError.builder()
+                    .projectId(project.getProjectId())
+                    .error(EXPORT_ERROR.PROJECT_DOES_NOT_HAVE_GEOMETRY)
+                    .build());
+
         }
 
         feature.setProperty("GlobalID", project.getProjectId());
@@ -278,7 +299,7 @@ public class GdbGelderlandExport {
             DataExchangePropertyModel dxPropertyModel = dxConfig.getDxProp(prop);
             addMappedProperty(
                     project,
-                    customPropsMap,
+                    customPropsTool.getCustomPropsMap(),
                     dxConfig,
                     errors,
                     feature,
