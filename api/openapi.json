@@ -2320,6 +2320,9 @@
           "valid": {
             "type": "boolean"
           },
+          "priceCategories": {
+            "$ref": "#/components/schemas/PriceCategories"
+          },
           "properties": {
             "type": "array",
             "items": {
@@ -2399,6 +2402,41 @@
           }
         }
       },
+      "PriceCategories": {
+        "required": ["buy", "rent"],
+        "type": "object",
+        "properties": {
+          "rent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceCategoryMapping"
+            }
+          },
+          "buy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceCategoryMapping"
+            }
+          }
+        }
+      },
+      "PriceCategoryMapping": {
+        "required": ["categoryValueIds", "name"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["KOOP1", "KOOP2", "KOOP3", "KOOP4", "KOOP_ONB", "HUUR1", "HUUR2", "HUUR3", "HUUR4", "HUUR_ONB"]
+          },
+          "categoryValueIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
       "ValidationError": {
         "type": "object",
         "properties": {
@@ -2470,6 +2508,13 @@
           "fileExtension": {
             "type": "string"
           },
+          "priceCategoryMappings": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["KOOP1", "KOOP2", "KOOP3", "KOOP4", "KOOP_ONB", "HUUR1", "HUUR2", "HUUR3", "HUUR4", "HUUR_ONB"]
+            }
+          },
           "priceCategoryPeriods": {
             "type": "array",
             "items": {
@@ -2483,7 +2528,7 @@
         "properties": {
           "category": {
             "type": "string",
-            "enum": ["koop1", "koop2", "koop3", "koop4", "koop_onb", "huur1", "huur2", "huur3", "huur4", "huur_onb"]
+            "enum": ["KOOP1", "KOOP2", "KOOP3", "KOOP4", "KOOP_ONB", "HUUR1", "HUUR2", "HUUR3", "HUUR4", "HUUR_ONB"]
           },
           "maxValue": {
             "type": "integer",

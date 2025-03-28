@@ -1,25 +1,26 @@
 package nl.vng.diwi.services;
 
-import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
-
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.StreamingOutput;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import nl.vng.diwi.dal.DataExchangeDAO;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
 import nl.vng.diwi.dal.entities.DataExchangeOptionState;
+import nl.vng.diwi.dal.entities.DataExchangePriceCategoryMapping;
+import nl.vng.diwi.dal.entities.DataExchangePriceCategoryMappingState;
 import nl.vng.diwi.dal.entities.DataExchangeProperty;
 import nl.vng.diwi.dal.entities.DataExchangePropertySqlModel;
 import nl.vng.diwi.dal.entities.DataExchangePropertyState;
@@ -28,13 +29,17 @@ import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
+import nl.vng.diwi.dal.entities.PropertyRangeCategoryValue;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.DataExchangeModel;
+import nl.vng.diwi.models.DataExchangeModel.PriceCategories;
+import nl.vng.diwi.models.DataExchangeModel.PriceCategoryMapping;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -42,6 +47,7 @@ import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.export.ArcGisProjectExporter;
+import nl.vng.diwi.services.export.DataExchangeConfigForExport;
 import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.gelderland.GdbGelderlandExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
@@ -57,21 +63,46 @@ public class DataExchangeService {
 
         List<DataExchangeState> states = repo.getDataExchangeDAO().getActiveDataExchangeStates();
 
-        return states.stream().map(s -> new DataExchangeModel(s, includeApiKey)).toList();
+        return states.stream().map(s -> {
+            var template = DataExchangeTemplate.templates.get(s.getType());
+            return new DataExchangeModel(s, includeApiKey, template);
+        }).toList();
 
     }
 
     public DataExchangeModel getDataExchangeModel(VngRepository repo, UUID dataExchangeId, boolean includeApiKey) throws VngNotFoundException {
+        DataExchangeDAO dataExchangeDAO = repo.getDataExchangeDAO();
 
-        DataExchangeState state = repo.getDataExchangeDAO().getActiveDataExchangeStateByDataExchangeUuid(dataExchangeId);
+        DataExchangeState state = dataExchangeDAO.getActiveDataExchangeStateByDataExchangeUuid(dataExchangeId);
         if (state == null) {
             throw new VngNotFoundException();
         }
+        var template = DataExchangeTemplate.templates.get(state.getType());
+        DataExchangeModel model = new DataExchangeModel(state, includeApiKey, template);
 
-        DataExchangeModel model = new DataExchangeModel(state, includeApiKey);
-        List<DataExchangePropertySqlModel> dxSqlProperties = repo.getDataExchangeDAO().getDataExchangeProperties(dataExchangeId);
+        DataExchangeDAO dataExchangeDAO2 = repo
+                .getDataExchangeDAO();
+        List<DataExchangePropertySqlModel> dxSqlProperties = dataExchangeDAO2
+                .getDataExchangeProperties(dataExchangeId);
         dxSqlProperties.forEach(sqlProp -> model.getProperties().add(new DataExchangePropertyModel(sqlProp)));
 
+        var dataExchangePriceMappings = dataExchangeDAO.getDataExchangePriceMappings(dataExchangeId);
+        if (!dataExchangePriceMappings.isEmpty()) {
+            var mappingsModel = new PriceCategories();
+            for (var mapping : dataExchangePriceMappings) {
+                OwnershipCategory ownershipCategory = mapping.getOwnershipCategory();
+                List<DataExchangePriceCategoryMappingState> mappings = mapping.getMappings();
+                if (mappings != null) {
+                    var priceRangeIds = mappings.stream().map(m -> m.getPriceRange().getId()).toList();
+                    if (ownershipCategory.getType() == OwnershipCategory.Type.BUY) {
+                        mappingsModel.getBuy().add(new PriceCategoryMapping(ownershipCategory, priceRangeIds));
+                    } else if (ownershipCategory.getType() == OwnershipCategory.Type.RENT) {
+                        mappingsModel.getRent().add(new PriceCategoryMapping(ownershipCategory, priceRangeIds));
+                    }
+                }
+            }
+            model.setPriceCategories(mappingsModel);
+        }
         return model;
     }
 
@@ -82,19 +113,20 @@ public class DataExchangeService {
 
         createDataExchangeState(repo, dataExchange.getId(), model, zdtNow, loggedUserUuid, false);
 
-        createDataExchangeTemplate(repo, dataExchange, model.getType());
+        DataExchangeTemplate template = DataExchangeTemplate.templates.get(model.getType());
+
+        if (template == null) {
+            throw new VngServerErrorException("Template for type " + model.getType() + " is not defined.");
+        }
+
+        createDataExchangeFromTemplate(repo, dataExchange, template);
 
         return dataExchange.getId();
 
     }
 
-    private void createDataExchangeTemplate(VngRepository repo, DataExchange dataExchange, DataExchangeType type) {
+    public void createDataExchangeFromTemplate(VngRepository repo, DataExchange dataExchange, DataExchangeTemplate template) {
 
-        DataExchangeTemplate template = DataExchangeTemplate.templates.get(type);
-
-        if (template == null) {
-            throw new VngServerErrorException("Template for type " + type.name() + " is not defined.");
-        }
         template.getProperties().forEach(prop -> {
             DataExchangeProperty dxProp = new DataExchangeProperty();
             dxProp.setDataExchange(dataExchange);
@@ -114,11 +146,20 @@ public class DataExchangeService {
                 });
             }
         });
+
+        if (template.getPriceCategoryMappings() != null) {
+            for (var cat : template.getPriceCategoryMappings()) {
+                var mapping = new DataExchangePriceCategoryMapping();
+                mapping.setDataExchange(dataExchange);
+                mapping.setOwnershipCategory(cat);
+                repo.persist(mapping);
+            }
+        }
     }
 
     public void createDataExchangeState(VngRepository repo, UUID dataExchangeUuid,
-                                        DataExchangeModel model, ZonedDateTime zdtNow,
-                                        UUID loggedUserUuid, boolean isUpdate) {
+            DataExchangeModel model, ZonedDateTime zdtNow,
+            UUID loggedUserUuid, boolean isUpdate) {
 
         DataExchangeState state = new DataExchangeState();
         state.setDataExchange(repo.getReferenceById(DataExchange.class, dataExchangeUuid));
@@ -134,9 +175,12 @@ public class DataExchangeService {
         repo.persist(state);
     }
 
-    public void updateDataExchange(VngRepository repo, DataExchangeModel dataExchangeModel,
-                                   DataExchangeModel oldModel, ZonedDateTime now,
-                                   UUID loggedUserUuid) throws VngNotFoundException {
+    public void updateDataExchange(
+            VngRepository repo,
+            DataExchangeModel dataExchangeModel,
+            DataExchangeModel oldModel,
+            ZonedDateTime now,
+            UUID loggedUserUuid) throws VngNotFoundException {
 
         User loggedUser = repo.getReferenceById(User.class, loggedUserUuid);
 
@@ -150,7 +194,8 @@ public class DataExchangeService {
             var oldDxProperty = oldPropMap.get(dxProperty.getId());
             if (!Objects.equals(dxProperty.getCustomPropertyId(), oldDxProperty.getCustomPropertyId())) {
                 if (oldDxProperty.getCustomPropertyId() != null) {
-                    DataExchangePropertyState oldDxPropState = repo.getDataExchangeDAO().getActiveDataExchangePropertyStateByDataExchangePropertyUuid(dxProperty.getId());
+                    DataExchangePropertyState oldDxPropState = repo.getDataExchangeDAO()
+                            .getActiveDataExchangePropertyStateByDataExchangePropertyUuid(dxProperty.getId());
                     oldDxPropState.setChangeUser(loggedUser);
                     oldDxPropState.setChangeEndDate(now);
                     repo.persist(oldDxPropState);
@@ -172,11 +217,15 @@ public class DataExchangeService {
             }
             for (var oldDxOption : oldDxProperty.getOptions()) {
                 var newDxOption = dxProperty.getOptions().stream().filter(o -> o.getId().equals(oldDxOption.getId())).findFirst().orElse(null);
-                List<DataExchangeOptionState> optionStates = repo.getDataExchangeDAO().getActiveDataExchangeOptionsStatesByDataExchangeOptionUuid(oldDxOption.getId());
+                List<DataExchangeOptionState> optionStates = repo.getDataExchangeDAO()
+                        .getActiveDataExchangeOptionsStatesByDataExchangeOptionUuid(oldDxOption.getId());
                 optionStates.forEach(os -> {
                     if (newDxOption == null ||
-                        (os.getPropertyCategoryValue() != null && (newDxOption.getPropertyCategoryValueIds() == null || !newDxOption.getPropertyCategoryValueIds().contains(os.getPropertyCategoryValue().getId()))) ||
-                        (os.getPropertyOrdinalValue() != null && (newDxOption.getPropertyOrdinalValueIds() == null || !newDxOption.getPropertyOrdinalValueIds().contains(os.getPropertyOrdinalValue().getId())))) {
+                            (os.getPropertyCategoryValue() != null && (newDxOption.getPropertyCategoryValueIds() == null
+                                    || !newDxOption.getPropertyCategoryValueIds().contains(os.getPropertyCategoryValue().getId())))
+                            ||
+                            (os.getPropertyOrdinalValue() != null && (newDxOption.getPropertyOrdinalValueIds() == null
+                                    || !newDxOption.getPropertyOrdinalValueIds().contains(os.getPropertyOrdinalValue().getId())))) {
                         os.setChangeUser(loggedUser);
                         os.setChangeEndDate(now);
                         repo.persist(os);
@@ -201,6 +250,57 @@ public class DataExchangeService {
                 }
             }
         }
+
+        if (dataExchangeModel.getPriceCategories() != null) {
+            var newMappings = new HashMap<UUID, OwnershipCategory>();
+            for (var newMapping : getAllMappings(dataExchangeModel)) {
+                for (var id : newMapping.getCategoryValueIds()) {
+                    newMappings.put(id, newMapping.getName());
+                }
+            }
+
+            var oldMappings = new HashMap<UUID, OwnershipCategory>();
+            var dbMappings = new HashMap<OwnershipCategory, DataExchangePriceCategoryMapping>();
+            for (var existingMappingsForCategory : repo.getDataExchangeDAO().getDataExchangePriceMappings(dataExchangeModel.getId())) {
+                dbMappings.put(existingMappingsForCategory.getOwnershipCategory(), existingMappingsForCategory);
+                for (var existingMapping : existingMappingsForCategory.getMappings()) {
+                    UUID priceRangeId = existingMapping.getPriceRange().getId();
+                    OwnershipCategory category = existingMappingsForCategory.getOwnershipCategory();
+                    if (newMappings.containsKey(priceRangeId)) {
+                        oldMappings.put(priceRangeId, category);
+                    } else {
+                        existingMapping.setChangeEndDate(now);
+                        existingMapping.setChangeUser(loggedUser);
+                        repo.persist(existingMapping);
+                    }
+                }
+            }
+
+            for (var newMapping : newMappings.entrySet()) {
+                if (!oldMappings.containsKey(newMapping.getKey())) {
+                    // This one needs to be added to the database
+                    var newEntity = new DataExchangePriceCategoryMappingState();
+                    newEntity.setDataExchangePriceCategoryMapping(dbMappings.get(newMapping.getValue()));
+                    newEntity.setPriceRange(repo.getReferenceById(PropertyRangeCategoryValue.class, newMapping.getKey()));
+                    newEntity.setChangeStartDate(now);
+                    newEntity.setCreateUser(loggedUser);
+                    repo.persist(newEntity);
+                }
+            }
+
+        }
+
+    }
+
+    private ArrayList<PriceCategoryMapping> getAllMappings(DataExchangeModel dataExchangeModel) {
+        var allMappings = new ArrayList<PriceCategoryMapping>();
+        if (dataExchangeModel.getPriceCategories().getBuy() != null) {
+            allMappings.addAll(dataExchangeModel.getPriceCategories().getBuy());
+        }
+        if (dataExchangeModel.getPriceCategories().getRent() != null) {
+            allMappings.addAll(dataExchangeModel.getPriceCategories().getRent());
+        }
+        return allMappings;
     }
 
     private void createDataExchangeOptionState(VngRepository repo, UUID optionId, UUID catValId, UUID ordValId, ZonedDateTime now, User loggedUser) {
@@ -231,7 +331,7 @@ public class DataExchangeService {
     }
 
     public StreamingOutput getExportObject(VngRepository repo, ConfigModel configModel, UUID dataExchangeUuid, DataExchangeExportModel dxExportModel,
-                                           List<DataExchangeExportError> errors, LoggedUser loggedUser)
+            List<DataExchangeExportError> errors, LoggedUser loggedUser)
             throws VngNotFoundException, VngBadRequestException {
 
         DataExchangeModel dataExchangeModel = getDataExchangeModel(repo, dataExchangeUuid, false);
@@ -248,40 +348,40 @@ public class DataExchangeService {
         final var templateMinConfidentiality = template.getMinimumConfidentiality();
 
         if (dxExportModel.getConfidentialityLevels() != null && !dxExportModel.getConfidentialityLevels().isEmpty()) {
-            var selectedMinConfidentiality = dxExportModel.getConfidentialityLevels().stream().min(Comparator.comparing(Confidentiality.confidentialityMap::get)).get();
+            var selectedMinConfidentiality = dxExportModel.getConfidentialityLevels().stream()
+                    .min(Comparator.comparing(Confidentiality.confidentialityMap::get)).get();
             if (Confidentiality.confidentialityMap.get(selectedMinConfidentiality) < Confidentiality.confidentialityMap.get(templateMinConfidentiality)) {
                 throw new VngBadRequestException(
-                    "Selected minimum confidentiality (%s) is lower than the minimum confidentiality allowed by the export (%s)"
-                        .formatted(selectedMinConfidentiality, templateMinConfidentiality));
+                        "Selected minimum confidentiality (%s) is lower than the minimum confidentiality allowed by the export (%s)"
+                                .formatted(selectedMinConfidentiality, templateMinConfidentiality));
             }
         }
 
-        Map<String, DataExchangePropertyModel> dxPropertiesMap = dataExchangeModel.getProperties().stream()
-                .collect(Collectors.toMap(DataExchangePropertyModel::getName, Function.identity()));
+        DataExchangeConfigForExport dataExchangeConfigForExport = new DataExchangeConfigForExport(dataExchangeModel);
 
         List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
-            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(
+        case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(
                 configModel,
                 repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser),
                 customProps,
-                dxPropertiesMap,
+                dataExchangeConfigForExport.getDxPropertiesMap(),
                 dxExportModel.getExportDate(),
                 templateMinConfidentiality,
                 errors);
-            case GEO_JSON -> GeoJSONExport.buildExportObject(
+        case GEO_JSON -> GeoJSONExport.buildExportObject(
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps);
-            case EXCEL -> ExcelExport.buildExportObject(
+        case EXCEL -> ExcelExport.buildExportObject(
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps);
 
-            case GDB_GELDERLAND -> GdbGelderlandExport.buildExportObject(
+        case GDB_GELDERLAND -> GdbGelderlandExport.buildExportObject(
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps,
-                dxPropertiesMap,
-                dxExportModel.getExportDate(),
+                dataExchangeConfigForExport,
                 template,
+                dxExportModel.getExportDate(),
                 errors,
                 loggedUser);
         };

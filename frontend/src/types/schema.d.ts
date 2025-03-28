@@ -305,6 +305,7 @@ export interface components {
             projectUrl?: string;
             projectDetailUrl?: string;
             valid?: boolean;
+            priceCategories?: components["schemas"]["PriceCategories"];
             properties?: components["schemas"]["DataExchangePropertyModel"][];
             validationErrors?: components["schemas"]["ValidationError"][];
         };
@@ -327,6 +328,15 @@ export interface components {
             mandatory?: boolean;
             singleSelect?: boolean;
             options?: components["schemas"]["DataExchangeOptionModel"][];
+        };
+        PriceCategories: {
+            rent: components["schemas"]["PriceCategoryMapping"][];
+            buy: components["schemas"]["PriceCategoryMapping"][];
+        };
+        PriceCategoryMapping: {
+            /** @enum {string} */
+            name: "KOOP1" | "KOOP2" | "KOOP3" | "KOOP4" | "KOOP_ONB" | "HUUR1" | "HUUR2" | "HUUR3" | "HUUR4" | "HUUR_ONB";
+            categoryValueIds: string[];
         };
         ValidationError: {
             dxProperty?: string;
@@ -364,11 +374,12 @@ export interface components {
                 | "EXTERNAL_GOVERNMENTAL"
                 | "PUBLIC";
             fileExtension?: string;
+            priceCategoryMappings?: ("KOOP1" | "KOOP2" | "KOOP3" | "KOOP4" | "KOOP_ONB" | "HUUR1" | "HUUR2" | "HUUR3" | "HUUR4" | "HUUR_ONB")[];
             priceCategoryPeriods?: components["schemas"]["PriceCategoryPeriod"][];
         };
         PriceCategory: {
             /** @enum {string} */
-            category?: "koop1" | "koop2" | "koop3" | "koop4" | "koop_onb" | "huur1" | "huur2" | "huur3" | "huur4" | "huur_onb";
+            category?: "KOOP1" | "KOOP2" | "KOOP3" | "KOOP4" | "KOOP_ONB" | "HUUR1" | "HUUR2" | "HUUR3" | "HUUR4" | "HUUR_ONB";
             /** Format: int64 */
             maxValue?: number;
         };

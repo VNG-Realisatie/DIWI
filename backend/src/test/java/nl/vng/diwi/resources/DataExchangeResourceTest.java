@@ -170,7 +170,7 @@ public class DataExchangeResourceTest {
         LocalDate endDate = LocalDate.of(2025, 1, 19);
 
         // Create the initial project and block
-        var fixture = ProjectsUtil.createTestProject(
+        ProjectsUtil.createTestProject(
                 userGroup,
                 userState,
                 startDate,

@@ -381,17 +381,49 @@ public class ProjectExportSqlModelExtended {
                     return null;
                 } else {
                     return new SingleValueOrRangeModel<>(ownershipRentalValue == null ? null : BigDecimal.valueOf(ownershipRentalValue, 2),
-                        ownershipRentalValueRangeMin == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMin, 2),
-                        ownershipRentalValueRangeMax == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMax, 2));
+                            ownershipRentalValueRangeMin == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMin, 2),
+                            ownershipRentalValueRangeMax == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMax, 2));
                 }
             } else {
                 if (ownershipValue == null && ownershipValueRangeMin == null) {
                     return null;
                 } else {
                     return new SingleValueOrRangeModel<>(ownershipValue == null ? null : BigDecimal.valueOf(ownershipValue, 2),
-                        ownershipValueRangeMin == null ? null : BigDecimal.valueOf(ownershipValueRangeMin, 2),
-                        ownershipValueRangeMax == null ? null : BigDecimal.valueOf(ownershipValueRangeMax, 2));
+                            ownershipValueRangeMin == null ? null : BigDecimal.valueOf(ownershipValueRangeMin, 2),
+                            ownershipValueRangeMax == null ? null : BigDecimal.valueOf(ownershipValueRangeMax, 2));
                 }
+            }
+        }
+
+        public Long getValue() {
+            if (ownershipType == OwnershipType.KOOPWONING) {
+                return getOwnershipValue();
+            } else {
+                return getOwnershipRentalValue();
+            }
+        }
+
+        public Long getMin() {
+            if (ownershipType == OwnershipType.KOOPWONING) {
+                return getOwnershipValueRangeMin();
+            } else {
+                return getOwnershipRentalValueRangeMin();
+            }
+        }
+
+        public Long getMax() {
+            if (ownershipType == OwnershipType.KOOPWONING) {
+                return getOwnershipValueRangeMax();
+            } else {
+                return getOwnershipRentalValueRangeMax();
+            }
+        }
+
+        public UUID getCategoryId() {
+            if (ownershipType == OwnershipType.KOOPWONING) {
+                return getOwnershipRangeCategoryId();
+            } else {
+                return getOwnershipRentalRangeCategoryId();
             }
         }
     }

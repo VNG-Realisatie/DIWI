@@ -12,6 +12,7 @@ import {
     ValidationError,
     getExportTypes,
     ExportType,
+    PriceCategories,
 } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,6 +24,7 @@ import { exchangeimportdata, exportSettings, updateExportSettings } from "../Pat
 import UserContext from "../context/UserContext";
 import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
 import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
+import ExportMappingPriceCategories from "../components/price-categories/ExportMappingPriceCategories";
 
 type ExportOption = {
     id: ExportType;
@@ -62,6 +64,8 @@ function ExportAdminPage() {
     const navigate = useNavigate();
     const [exportTypes, setExportTypes] = useState<ExportType[]>([]);
     const [visibleOptions, setVisibleOptions] = useState<{ [key: string]: boolean }>({});
+
+    const [exportPriceCategories, setExportPriceCategories] = useState<PriceCategories>();
 
     const toggleOptions = (propertyId: string) => {
         setVisibleOptions((prev) => ({
@@ -136,7 +140,7 @@ function ExportAdminPage() {
         if (id) {
             const fetchData = async () => {
                 const data = await getExportDataById(id);
-                const { properties, valid, validationErrors, ...formData } = data;
+                const { properties, valid, validationErrors, priceCategories, ...formData } = data;
 
                 const updatedProperties = properties?.map((property) => {
                     if (!customProperties.some((customProp) => customProp.id === property.customPropertyId)) {
@@ -168,6 +172,7 @@ function ExportAdminPage() {
                 setFormData(formData);
                 setProperties(updatedProperties || []);
                 setType({ id: data.type as ExportType, name: t(`admin.export.${data.type}`) });
+                setExportPriceCategories(priceCategories);
             };
             fetchData();
         }
@@ -194,6 +199,7 @@ function ExportAdminPage() {
                 clientId: formData?.clientId,
                 projectUrl: formData?.projectUrl ?? "",
                 ...(id && { properties }),
+                priceCategories: exportPriceCategories,
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setValidationErrors(data.validationErrors || []);
@@ -239,7 +245,14 @@ function ExportAdminPage() {
             ? matchingCustomProperty.categories
             : matchingCustomProperty?.ordinals?.length
               ? matchingCustomProperty.ordinals
-              : [];
+              : matchingCustomProperty?.ranges?.length
+                ? matchingCustomProperty.ranges.map((range) => ({
+                      id: range.id,
+                      name: range.name,
+                      disabled: range.disabled,
+                  }))
+                : [];
+
         return {
             id: property.id,
             name: property.name,
@@ -286,6 +299,13 @@ function ExportAdminPage() {
                         />
                     </Grid>
                 ))}
+
+                <ExportMappingPriceCategories
+                    priceCategories={exportPriceCategories}
+                    setPriceCategories={setExportPriceCategories}
+                    customProperties={customProperties}
+                    mapPropertyToCustomDefinition={mapPropertyToCustomDefinition}
+                />
 
                 {properties.map((property, index) => {
                     const selectedOption = customProperties.find((customProperty) => customProperty.id === property.customPropertyId);

@@ -84,9 +84,7 @@ public class DataExchangeResource {
     @RolesAllowed(UserActionConstants.VIEW_DATA_EXCHANGES)
     @Produces(MediaType.APPLICATION_JSON)
     public DataExchangeModel getDataExchange(@PathParam("id") UUID dataExchangeUuid) throws VngNotFoundException {
-
         return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
-
     }
 
     @POST

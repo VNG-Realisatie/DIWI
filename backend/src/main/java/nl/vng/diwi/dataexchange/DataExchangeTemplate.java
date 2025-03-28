@@ -1,5 +1,7 @@
 package nl.vng.diwi.dataexchange;
 
+import static nl.vng.diwi.dal.entities.enums.OwnershipCategory.*;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +17,8 @@ import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
-import nl.vng.diwi.services.export.OwnershipCategory;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandProjectProps;
 
 @Data
@@ -35,6 +37,8 @@ public class DataExchangeTemplate {
     private Confidentiality minimumConfidentiality = Confidentiality.EXTERNAL_REGIONAL;
 
     private String fileExtension;
+
+    private List<OwnershipCategory> priceCategoryMappings;
 
     /**
      * Price categories can change over time. This is a list of price category definitions together with the last date they are valid.
@@ -209,17 +213,28 @@ public class DataExchangeTemplate {
     private static DataExchangeTemplate createGelderlandTemplate() {
         return DataExchangeTemplate.builder()
                 .fileExtension("gdb.zip")
+                .priceCategoryMappings(List.of(
+                        KOOP1,
+                        KOOP2,
+                        KOOP3,
+                        KOOP4,
+                        KOOP_ONB,
+                        HUUR1,
+                        HUUR2,
+                        HUUR3,
+                        HUUR4,
+                        HUUR_ONB))
                 .priceCategoryPeriods(List.of(
                         new PriceCategoryPeriod(
                                 null,
                                 List.of(
-                                        new PriceCategory(OwnershipCategory.koop2, 405_000_00l),
-                                        new PriceCategory(OwnershipCategory.koop4, null)),
+                                        new PriceCategory(KOOP2, 405_000_00l),
+                                        new PriceCategory(KOOP4, null)),
                                 List.of(
-                                        new PriceCategory(OwnershipCategory.huur1, 731_00l),
-                                        new PriceCategory(OwnershipCategory.huur2, 900_07l),
-                                        new PriceCategory(OwnershipCategory.huur3, 1_185_00l),
-                                        new PriceCategory(OwnershipCategory.huur4, null)))))
+                                        new PriceCategory(HUUR1, 731_00l),
+                                        new PriceCategory(HUUR2, 900_07l),
+                                        new PriceCategory(HUUR3, 1_185_00l),
+                                        new PriceCategory(HUUR4, null)))))
                 .properties(ImmutableList.<TemplateProperty>builder()
                         .add(TemplateProperty.builder()
                                 .name("gemeente")

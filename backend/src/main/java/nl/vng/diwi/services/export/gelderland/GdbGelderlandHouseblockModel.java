@@ -71,16 +71,16 @@ public class GdbGelderlandHouseblockModel {
 
         for (var ownership : houseblock.getOwnershipValueList()) {
             switch (ownership.getOwnershipCategory()) {
-            case koop1 -> this.ownershipKoop1.addValue(ownership.getAmount());
-            case koop2 -> this.ownershipKoop2.addValue(ownership.getAmount());
-            case koop3 -> this.ownershipKoop3.addValue(ownership.getAmount());
-            case koop4 -> this.ownershipKoop4.addValue(ownership.getAmount());
-            case koop_onb -> this.ownershipKoopUnknown.addValue(ownership.getAmount());
-            case huur1 -> this.ownershipHuur1.addValue(ownership.getAmount());
-            case huur2 -> this.ownershipHuur2.addValue(ownership.getAmount());
-            case huur3 -> this.ownershipHuur3.addValue(ownership.getAmount());
-            case huur4 -> this.ownershipHuur4.addValue(ownership.getAmount());
-            case huur_onb -> this.ownershipHuurUnknown.addValue(ownership.getAmount());
+            case KOOP1 -> this.ownershipKoop1.addValue(ownership.getAmount());
+            case KOOP2 -> this.ownershipKoop2.addValue(ownership.getAmount());
+            case KOOP3 -> this.ownershipKoop3.addValue(ownership.getAmount());
+            case KOOP4 -> this.ownershipKoop4.addValue(ownership.getAmount());
+            case KOOP_ONB -> this.ownershipKoopUnknown.addValue(ownership.getAmount());
+            case HUUR1 -> this.ownershipHuur1.addValue(ownership.getAmount());
+            case HUUR2 -> this.ownershipHuur2.addValue(ownership.getAmount());
+            case HUUR3 -> this.ownershipHuur3.addValue(ownership.getAmount());
+            case HUUR4 -> this.ownershipHuur4.addValue(ownership.getAmount());
+            case HUUR_ONB -> this.ownershipHuurUnknown.addValue(ownership.getAmount());
             }
         }
     }

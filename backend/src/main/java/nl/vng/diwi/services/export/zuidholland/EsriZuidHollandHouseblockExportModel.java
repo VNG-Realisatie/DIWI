@@ -6,12 +6,12 @@ import lombok.Data;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel.OwnershipValueSqlModel;
 import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
-import nl.vng.diwi.services.export.OwnershipCategory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +79,7 @@ public class EsriZuidHollandHouseblockExportModel {
                                 && r.getId().equals(o.getOwnershipRangeCategoryId()))
                         .findFirst().orElse(null);
                 if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                    oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
                 } else {
                     oModel.setOwnershipCategory(ExportUtil.getOwnershipCategory(
                             projectUuid,
@@ -91,7 +91,7 @@ public class EsriZuidHollandHouseblockExportModel {
                             errors));
                 }
             } else {
-                oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                oModel.setOwnershipCategory(OwnershipCategory.KOOP_ONB);
             }
         } else {
             if (o.getOwnershipRentalValue() != null) {
@@ -112,7 +112,7 @@ public class EsriZuidHollandHouseblockExportModel {
                                 && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
                         .findFirst().orElse(null);
                 if (rangeOption == null) {
-                    oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                    oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
                 } else {
                     oModel.setOwnershipCategory(
                             ExportUtil.getOwnershipCategory(projectUuid,
@@ -124,7 +124,7 @@ public class EsriZuidHollandHouseblockExportModel {
                                     errors));
                 }
             } else {
-                oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                oModel.setOwnershipCategory(OwnershipCategory.HUUR_ONB);
             }
         }
         return oModel;

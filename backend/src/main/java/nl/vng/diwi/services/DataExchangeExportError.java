@@ -3,7 +3,7 @@ package nl.vng.diwi.services;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.vng.diwi.services.export.OwnershipCategory;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import lombok.Getter;
 import lombok.AccessLevel;
 
