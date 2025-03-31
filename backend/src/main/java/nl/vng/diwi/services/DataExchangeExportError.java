@@ -8,7 +8,6 @@ import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import lombok.Getter;
 import lombok.AccessLevel;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Data
