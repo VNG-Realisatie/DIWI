@@ -296,7 +296,7 @@ public class GdbGelderlandExport {
 
         for (var templateProperty : DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND).getProperties()) {
             var prop = templateProperty.getName();
-            DataExchangePropertyModel dxPropertyModel = dxConfig.getDxProp(prop);
+            var dxPropertyModel = dxConfig.getDxProp(prop);
             addMappedProperty(
                     project,
                     customPropsTool.getCustomPropsMap(),

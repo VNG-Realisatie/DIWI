@@ -343,6 +343,23 @@ public class DataExchangeTemplate {
                                         "Onbekend"))
                                 .build())
                         // Knelpunten meerkeuze
+                        .add(TemplateProperty.builder()
+                                .name("knelpunten_meerkeuze")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
+                                .options(List.of(
+                                        "Ambtelijke capaciteit",
+                                        "Bereikbaarheid",
+                                        "Onrendabele top",
+                                        "Anders",
+                                        "Geen",
+                                        "Onbekend",
+                                        "Stikstofruimte",
+                                        "Netcongestie",
+                                        "Onderhandelingen met eigenaren en ontwikkelaars",
+                                        "Bezwaar en beroep"))
+                                .build())
 
                         .add(TemplateProperty.builder()
                                 .name("toelichting_knelpunten")
