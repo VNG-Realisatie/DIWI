@@ -229,6 +229,8 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class CategoryPropertyModel {
         private UUID propertyId;
         private List<UUID> optionValues;

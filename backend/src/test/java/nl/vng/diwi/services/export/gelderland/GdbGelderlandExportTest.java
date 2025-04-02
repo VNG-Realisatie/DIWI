@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import nl.vng.diwi.dal.entities.DataExchangeOptionSqlModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
-import nl.vng.diwi.models.DataExchangeOptionModel;
 import nl.vng.diwi.models.SelectDisabledModel;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -23,6 +20,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.CategoryPropertyModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.HouseblockExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.NumericPropertyModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.OwnershipValueSqlModel;
@@ -41,6 +39,7 @@ import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.generic.ResourceUtil;
 import nl.vng.diwi.models.DataExchangeModel;
+import nl.vng.diwi.models.DataExchangeOptionModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.DataExchangePropertyModel.DataExchangePropertyModelBuilder;
 import nl.vng.diwi.models.PropertyModel;
@@ -185,36 +184,38 @@ public class GdbGelderlandExportTest {
                 .lastName("last")
                 .build();
 
-        // Create some custom props
-        SelectDisabledModel e1 = new SelectDisabledModel();
-        e1.setId(UUID.randomUUID());
-        e1.setDisabled(false);
+        // Create an option for the categorical properties
+        SelectDisabledModel option1 = new SelectDisabledModel();
+        option1.setId(UUID.fromString("0000000-0000-0000-0004-000000000001"));
+        option1.setDisabled(false);
+        option1.setName("option1");
 
+        // Create some custom properties
         List<PropertyModel> customProps = List.of(
                 PropertyModel.builder()
-                        .id(UUID.randomUUID())
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000001"))
                         .name(PropertyType.TEXT.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.TEXT)
                         .type(PropertyKind.CUSTOM)
                         .build(),
                 PropertyModel.builder()
-                        .id(UUID.randomUUID())
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000002"))
                         .name(PropertyType.NUMERIC.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.NUMERIC)
                         .type(PropertyKind.CUSTOM)
                         .build(),
                 PropertyModel.builder()
-                        .id(UUID.randomUUID())
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000003"))
                         .name(CATEGORY.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.CATEGORY)
                         .type(PropertyKind.CUSTOM)
-                        .categories(List.of(e1))
+                        .categories(List.of(option1))
                         .build(),
                 PropertyModel.builder()
-                        .id(UUID.randomUUID())
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000004"))
                         .name(Constants.FIXED_PROPERTY_GEOMETRY)
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.TEXT)
@@ -226,15 +227,8 @@ public class GdbGelderlandExportTest {
                 .collect(Collectors.toMap(PropertyModel::getName, p -> p));
 
         // Create a project with some blocks
-        ProjectExportSqlModelExtended.CategoryPropertyModel categoryPropertyModel = new ProjectExportSqlModelExtended.CategoryPropertyModel();
-        var propertyId = UUID.fromString("45667582-1b14-4157-882e-a9a2cad8d475");
-        var optionValue1 = UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd");
-        var optionValue2 = UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040ce");
-        categoryPropertyModel.setPropertyId(propertyId);
-        categoryPropertyModel.setOptionValues(List.of(optionValue1, optionValue2));
-
         ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
-                .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
+                .projectId(UUID.fromString("0000000-0000-0000-0002-000000000001"))
                 .name("project name")
                 .creation_date(LocalDate.of(2025, 1, 1))
                 .last_edit_date(LocalDate.of(2025, 2, 1))
@@ -249,7 +243,10 @@ public class GdbGelderlandExportTest {
                         new TextPropertyModel(customPropMap.get(Constants.FIXED_PROPERTY_GEOMETRY).getId(), ProjectsUtil.PLOT_JSON_STRING)))
                 .numericProperties(List.of(
                         new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
-                .categoryProperties(List.of(categoryPropertyModel))
+                .categoryProperties(List.of(CategoryPropertyModel.builder()
+                        .propertyId(customPropMap.get(PropertyType.CATEGORY.name()).getId())
+                        .optionValues(List.of(option1.getId()))
+                        .build()))
                 .houseblocks(List.of(
                         HouseblockExportSqlModel.builder()
                                 .name("block1")
@@ -332,7 +329,12 @@ public class GdbGelderlandExportTest {
                     } else if (dxProp.getPropertyTypes().contains(CATEGORY)) {
                         return builder
                                 .customPropertyId(customPropMap.get(PropertyType.CATEGORY.name()).getId())
-                                .options(List.of())
+                                .options(List.of(
+                                        new DataExchangeOptionModel(
+                                                UUID.fromString("0000000-0000-0000-0005-000000000003"),
+                                                dxProp.getOptions().get(0),
+                                                List.of(option1.getId()),
+                                                List.of())))
                                 .build();
                     }
                     return null;

@@ -1,5 +1,6 @@
 package nl.vng.diwi.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode
+@AllArgsConstructor
 public class DataExchangeOptionModel {
 
     private UUID id;

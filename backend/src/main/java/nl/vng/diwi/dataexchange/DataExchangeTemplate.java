@@ -94,6 +94,29 @@ public class DataExchangeTemplate {
         @Builder.Default
         private Boolean singleSelect = false;
         private List<String> options;
+
+        /**
+         * This value is used if there are no options to map for a categorical property.
+         * Actual value depends on the output format. GeoJSON support null, CSV will always use an empty string.
+         */
+        private Object defaultValue;
+
+        /**
+         * Used to join categories if the export format doesn't support arrays.
+         */
+        private String joinString;
+
+        public TemplateProperty(
+                String name,
+                ObjectType objectType,
+                List<PropertyType> propertyTypes,
+                Boolean mandatory,
+                Boolean singleSelect,
+                List<String> options
+                )
+        {
+            this(name, objectType, propertyTypes, mandatory, singleSelect, options, null, null);
+        }
     }
 
     public static final DataExchangeTemplate gelderlandTemplate = createGelderlandTemplate();
@@ -270,6 +293,7 @@ public class DataExchangeTemplate {
                                         "Meerdere namelijk",
                                         "Anders",
                                         "Onbekend"))
+                                .joinString(",")
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("opdrachtgever_naam")
@@ -320,6 +344,7 @@ public class DataExchangeTemplate {
                                         "Dorps",
                                         "Landelijk",
                                         "Onbekend"))
+                                .joinString(",")
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("beoogd_woonmilieu_ABF13")
@@ -341,8 +366,8 @@ public class DataExchangeTemplate {
                                         "Landelijk bereikbaar",
                                         "Landelijk perifeer",
                                         "Onbekend"))
+                                .joinString(",")
                                 .build())
-                        // Knelpunten meerkeuze
                         .add(TemplateProperty.builder()
                                 .name("knelpunten_meerkeuze")
                                 .objectType(ObjectType.PROJECT)
@@ -359,6 +384,7 @@ public class DataExchangeTemplate {
                                         "Netcongestie",
                                         "Onderhandelingen met eigenaren en ontwikkelaars",
                                         "Bezwaar en beroep"))
+                                .joinString(",")
                                 .build())
 
                         .add(TemplateProperty.builder()
@@ -374,6 +400,7 @@ public class DataExchangeTemplate {
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
                                 .mandatory(false)
                                 .options(List.of("Woningcorporatie", "Overig", "Combinatie", "Onbekend"))
+                                .joinString(",")
                                 .build())
 
                         .add(TemplateProperty.builder()
@@ -422,6 +449,7 @@ public class DataExchangeTemplate {
                                         "6. Individueel NOM",
                                         "7. Duurzaam gasverwarming",
                                         "8. Onbekend"))
+                                .joinString(",")
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("tapwatervoorziening")
@@ -442,6 +470,7 @@ public class DataExchangeTemplate {
                                         "6. LT warmtepomp grond-water",
                                         "7. Groengas",
                                         "Onbekend"))
+                                .joinString(",")
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("realisatiekans")
@@ -459,6 +488,7 @@ public class DataExchangeTemplate {
                                         "80%",
                                         "90%",
                                         "100%"))
+                                .joinString(",")
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("aandachtsgroepen")
@@ -471,6 +501,7 @@ public class DataExchangeTemplate {
                                         "Arbeidsmigranten",
                                         "Woonwagenbewoners",
                                         "Overig"))
+                                .joinString(",")
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("sleutelproject")
@@ -478,6 +509,7 @@ public class DataExchangeTemplate {
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
                                 .mandatory(false)
                                 .options(List.of("Ja", "Nee", "Onbekend"))
+                                .joinString(",")
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("onzelfstandige_wooneenheden")

@@ -17,8 +17,6 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.TextPropertyModel;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
-import nl.vng.diwi.models.SelectDisabledModel;
-import nl.vng.diwi.models.SelectModel;
 
 @Data
 public class CustomPropsTool {
