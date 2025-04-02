@@ -93,6 +93,7 @@
     "verhuurder_type": "",
     "vertrouwelijkheid": "ProvincieGemeente",
     "woonplaats": "text_value",
-    "zoekgebied": "text_value"
+    "zoekgebied": "text_value",
+    "knelpunten_meerkeuze": "text_value,text_value2"
   }
 }

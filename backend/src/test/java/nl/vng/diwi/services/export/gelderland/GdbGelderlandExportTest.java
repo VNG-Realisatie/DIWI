@@ -1,5 +1,6 @@
 package nl.vng.diwi.services.export.gelderland;
 
+import static nl.vng.diwi.dal.entities.enums.PropertyType.CATEGORY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -12,6 +13,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import nl.vng.diwi.dal.entities.DataExchangeOptionSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
+import nl.vng.diwi.models.DataExchangeOptionModel;
+import nl.vng.diwi.models.SelectDisabledModel;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -181,6 +186,10 @@ public class GdbGelderlandExportTest {
                 .build();
 
         // Create some custom props
+        SelectDisabledModel e1 = new SelectDisabledModel();
+        e1.setId(UUID.randomUUID());
+        e1.setDisabled(false);
+
         List<PropertyModel> customProps = List.of(
                 PropertyModel.builder()
                         .id(UUID.randomUUID())
@@ -196,7 +205,15 @@ public class GdbGelderlandExportTest {
                         .propertyType(PropertyType.NUMERIC)
                         .type(PropertyKind.CUSTOM)
                         .build(),
-                        PropertyModel.builder()
+                PropertyModel.builder()
+                        .id(UUID.randomUUID())
+                        .name(CATEGORY.name())
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.CATEGORY)
+                        .type(PropertyKind.CUSTOM)
+                        .categories(List.of(e1))
+                        .build(),
+                PropertyModel.builder()
                         .id(UUID.randomUUID())
                         .name(Constants.FIXED_PROPERTY_GEOMETRY)
                         .objectType(ObjectType.PROJECT)
@@ -209,6 +226,13 @@ public class GdbGelderlandExportTest {
                 .collect(Collectors.toMap(PropertyModel::getName, p -> p));
 
         // Create a project with some blocks
+        ProjectExportSqlModelExtended.CategoryPropertyModel categoryPropertyModel = new ProjectExportSqlModelExtended.CategoryPropertyModel();
+        var propertyId = UUID.fromString("45667582-1b14-4157-882e-a9a2cad8d475");
+        var optionValue1 = UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd");
+        var optionValue2 = UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040ce");
+        categoryPropertyModel.setPropertyId(propertyId);
+        categoryPropertyModel.setOptionValues(List.of(optionValue1, optionValue2));
+
         ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
                 .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
                 .name("project name")
@@ -225,6 +249,7 @@ public class GdbGelderlandExportTest {
                         new TextPropertyModel(customPropMap.get(Constants.FIXED_PROPERTY_GEOMETRY).getId(), ProjectsUtil.PLOT_JSON_STRING)))
                 .numericProperties(List.of(
                         new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
+                .categoryProperties(List.of(categoryPropertyModel))
                 .houseblocks(List.of(
                         HouseblockExportSqlModel.builder()
                                 .name("block1")
@@ -303,6 +328,11 @@ public class GdbGelderlandExportTest {
                                 .build();
                     } else if (dxProp.getPropertyTypes().contains(PropertyType.NUMERIC)) {
                         return builder.customPropertyId(customPropMap.get(PropertyType.NUMERIC.name()).getId())
+                                .build();
+                    } else if (dxProp.getPropertyTypes().contains(CATEGORY)) {
+                        return builder
+                                .customPropertyId(customPropMap.get(PropertyType.CATEGORY.name()).getId())
+                                .options(List.of())
                                 .build();
                     }
                     return null;

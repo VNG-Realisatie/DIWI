@@ -76,6 +76,7 @@ public class GdbGelderlandExport {
             "huur4",
             "huur_onb",
             "onbekend");
+    private static final String GELDERLAND = "Gelderland";
 
     static List<String> detailPlanningHeaders;
     static {
@@ -248,7 +249,7 @@ public class GdbGelderlandExport {
         feature.setProperty("Edited", project.getLast_edit_date());
 
         feature.setProperty("plannaam", project.getName());
-        feature.setProperty("provincie", "Gelderland");
+        feature.setProperty("provincie", GELDERLAND);
 
         feature.setProperty("vertrouwelijkheid", mapConfidentiality(project.getConfidentiality()));
 
@@ -257,6 +258,7 @@ public class GdbGelderlandExport {
         feature.setProperty("plantype", mapPlanType(project.getPlanType()));
         feature.setProperty("projectfase", mapProjectPhase(project, exportDate));
         feature.setProperty("status_planologisch", mapPlanStatus(project.getPlanningPlanStatus()));
+        feature.setProperty("knelpunten_meerkeuze", project.getCategoryProperties());
 
         // The following props are deliberately empty
         feature.setProperty("koppelid", null);
