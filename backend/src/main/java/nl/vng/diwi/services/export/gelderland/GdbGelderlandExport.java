@@ -76,6 +76,7 @@ public class GdbGelderlandExport {
             "huur4",
             "huur_onb",
             "onbekend");
+    private static final String GELDERLAND = "Gelderland";
 
     static List<String> detailPlanningHeaders;
     static {
@@ -248,7 +249,7 @@ public class GdbGelderlandExport {
         feature.setProperty("Edited", project.getLast_edit_date());
 
         feature.setProperty("plannaam", project.getName());
-        feature.setProperty("provincie", "Gelderland");
+        feature.setProperty("provincie", GELDERLAND);
 
         feature.setProperty("vertrouwelijkheid", mapConfidentiality(project.getConfidentiality()));
 
@@ -257,6 +258,7 @@ public class GdbGelderlandExport {
         feature.setProperty("plantype", mapPlanType(project.getPlanType()));
         feature.setProperty("projectfase", mapProjectPhase(project, exportDate));
         feature.setProperty("status_planologisch", mapPlanStatus(project.getPlanningPlanStatus()));
+        feature.setProperty("knelpunten_meerkeuze", project.getCategoryProperties());
 
         // The following props are deliberately empty
         feature.setProperty("koppelid", null);
@@ -296,7 +298,7 @@ public class GdbGelderlandExport {
 
         for (var templateProperty : DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND).getProperties()) {
             var prop = templateProperty.getName();
-            DataExchangePropertyModel dxPropertyModel = dxConfig.getDxProp(prop);
+            var dxPropertyModel = dxConfig.getDxProp(prop);
             addMappedProperty(
                     project,
                     customPropsTool.getCustomPropsMap(),
@@ -678,10 +680,16 @@ public class GdbGelderlandExport {
 
     }
 
-    private static void addProjectCategoricalCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
-            DataExchangeConfigForExport dataExchangeConfigForExport, Map<UUID, List<UUID>> projectCategoricalCustomProps,
+    public static void addProjectCategoricalCustomProperty(
+            UUID projectUuid,
+            Feature projectFeature,
+            DataExchangeTemplate.TemplateProperty templateProperty,
+            DataExchangeConfigForExport dataExchangeConfigForExport,
+            Map<UUID, List<UUID>> projectCategoricalCustomProps,
             List<DataExchangeExportError> errors) {
-        DataExchangePropertyModel dataExchangePropertyModel = dataExchangeConfigForExport.getDxProp(templateProperty.getName());
+        final var dxPropertyName = templateProperty.getName();
+
+        DataExchangePropertyModel dataExchangePropertyModel = dataExchangeConfigForExport.getDxProp(dxPropertyName);
         List<String> ezhValue = new ArrayList<>();
         if (dataExchangePropertyModel == null) {
             errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
@@ -703,14 +711,21 @@ public class GdbGelderlandExport {
             errors.add(new DataExchangeExportError(projectUuid, templateProperty.getName(), MULTIPLE_SINGLE_SELECT_VALUES));
         }
 
+        final var defaultValue = templateProperty.getDefaultValue();
+        final Object value;
         if (templateProperty.getSingleSelect()) {
-            projectFeature.getProperties().put(templateProperty.getName(), ezhValue.isEmpty() ? null : ezhValue.get(0));
+            value = ezhValue.isEmpty() ? defaultValue : ezhValue.get(0);
         } else {
-            projectFeature.getProperties().put(templateProperty.getName(), ezhValue.isEmpty() ? null : ezhValue);
+            if (templateProperty.getJoinString() != null) {
+                value = String.join(templateProperty.getJoinString(), ezhValue);
+            } else {
+                value = ezhValue.isEmpty() ? defaultValue : ezhValue;
+            }
         }
+        projectFeature.getProperties().put(dxPropertyName, value);
     }
 
-    private static BigDecimal addProjectNumericCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
+    private static void addProjectNumericCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
             DataExchangeConfigForExport dataExchangeConfigForExport, Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps,
             List<DataExchangeExportError> errors) {
         DataExchangePropertyModel dataExchangePropertyModel = dataExchangeConfigForExport.getDxProp(templateProperty.getName());
@@ -731,8 +746,6 @@ public class GdbGelderlandExport {
             errors.add(new DataExchangeExportError(projectUuid, templateProperty.getName(), MISSING_MANDATORY_VALUE));
         }
         projectFeature.getProperties().put(templateProperty.getName(), ezhValue);
-
-        return ezhValue;
     }
 
     private static List<Map<String, Object>> getHouseblockProperties(List<GdbGelderlandHouseblockExportModel> houseblocks) {
