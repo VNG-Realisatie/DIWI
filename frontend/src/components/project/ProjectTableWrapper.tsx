@@ -136,8 +136,10 @@ const ProjectsTableWrapper = ({
                             {t("projects.confidentialityChange")}
                         </Button>
                         {clientId && (
+                            // disabled={token ? false : true}
+                            // temporary disable until backend part is impelemented
                             <Button
-                                disabled={token ? false : true}
+                                disabled={true}
                                 sx={{ width: "130px", my: 2 }}
                                 variant="contained"
                                 onClick={() => {
