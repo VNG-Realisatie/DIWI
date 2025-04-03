@@ -1,5 +1,6 @@
 package nl.vng.diwi.services.export.gelderland;
 
+import static nl.vng.diwi.dal.entities.enums.PropertyType.CATEGORY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -10,15 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import nl.vng.diwi.models.SelectDisabledModel;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.CategoryPropertyModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.HouseblockExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.NumericPropertyModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.OwnershipValueSqlModel;
@@ -30,18 +32,21 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.generic.ResourceUtil;
 import nl.vng.diwi.models.DataExchangeModel;
+import nl.vng.diwi.models.DataExchangeOptionModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.DataExchangePropertyModel.DataExchangePropertyModelBuilder;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
+import nl.vng.diwi.services.export.CustomPropsTool;
 import nl.vng.diwi.services.export.DataExchangeConfigForExport;
 import nl.vng.diwi.testutil.ProjectsUtil;
 
@@ -62,12 +67,14 @@ public class GdbGelderlandExportTest {
                         .name("text")
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
                         .build(),
                 PropertyModel.builder()
                         .id(UUID.randomUUID())
                         .name(PropertyType.NUMERIC.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.NUMERIC)
+                        .type(PropertyKind.CUSTOM)
                         .build());
 
         // Make it easy to find the custom prop
@@ -177,19 +184,42 @@ public class GdbGelderlandExportTest {
                 .lastName("last")
                 .build();
 
-        // Create some custom props
+        // Create an option for the categorical properties
+        SelectDisabledModel option1 = new SelectDisabledModel();
+        option1.setId(UUID.fromString("0000000-0000-0000-0004-000000000001"));
+        option1.setDisabled(false);
+        option1.setName("option1");
+
+        // Create some custom properties
         List<PropertyModel> customProps = List.of(
                 PropertyModel.builder()
-                        .id(UUID.randomUUID())
-                        .name("text")
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000001"))
+                        .name(PropertyType.TEXT.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
                         .build(),
                 PropertyModel.builder()
-                        .id(UUID.randomUUID())
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000002"))
                         .name(PropertyType.NUMERIC.name())
                         .objectType(ObjectType.PROJECT)
                         .propertyType(PropertyType.NUMERIC)
+                        .type(PropertyKind.CUSTOM)
+                        .build(),
+                PropertyModel.builder()
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000003"))
+                        .name(CATEGORY.name())
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.CATEGORY)
+                        .type(PropertyKind.CUSTOM)
+                        .categories(List.of(option1))
+                        .build(),
+                PropertyModel.builder()
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000004"))
+                        .name(Constants.FIXED_PROPERTY_GEOMETRY)
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
                         .build());
 
         // Make it easy to find the custom prop
@@ -198,20 +228,25 @@ public class GdbGelderlandExportTest {
 
         // Create a project with some blocks
         ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
-                .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
+                .projectId(UUID.fromString("0000000-0000-0000-0002-000000000001"))
                 .name("project name")
                 .creation_date(LocalDate.of(2025, 1, 1))
                 .last_edit_date(LocalDate.of(2025, 2, 1))
                 .endDate(LocalDate.of(2025, 12, 1))
-                .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
+                // .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
                 .projectPhase(ProjectPhase._5_PREPARATION)
                 .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
                 .planningPlanStatus(List.of(PlanStatus._2B_VASTGESTELD_MET_UITWERKING_NODIG))
                 .textProperties(List.of(
-                        new TextPropertyModel(customPropMap.get("text").getId(), "text_value")))
+                        new TextPropertyModel(customPropMap.get(PropertyType.TEXT.name()).getId(), "text_value"),
+                        new TextPropertyModel(customPropMap.get(Constants.FIXED_PROPERTY_GEOMETRY).getId(), ProjectsUtil.PLOT_JSON_STRING)))
                 .numericProperties(List.of(
                         new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
+                .categoryProperties(List.of(CategoryPropertyModel.builder()
+                        .propertyId(customPropMap.get(PropertyType.CATEGORY.name()).getId())
+                        .optionValues(List.of(option1.getId()))
+                        .build()))
                 .houseblocks(List.of(
                         HouseblockExportSqlModel.builder()
                                 .name("block1")
@@ -286,10 +321,20 @@ public class GdbGelderlandExportTest {
                     DataExchangePropertyModelBuilder builder = DataExchangePropertyModel.builder()
                             .name(dxProp.getName());
                     if (dxProp.getPropertyTypes().contains(PropertyType.TEXT)) {
-                        return builder.customPropertyId(customPropMap.get("text").getId())
+                        return builder.customPropertyId(customPropMap.get(PropertyType.TEXT.name()).getId())
                                 .build();
                     } else if (dxProp.getPropertyTypes().contains(PropertyType.NUMERIC)) {
                         return builder.customPropertyId(customPropMap.get(PropertyType.NUMERIC.name()).getId())
+                                .build();
+                    } else if (dxProp.getPropertyTypes().contains(CATEGORY)) {
+                        return builder
+                                .customPropertyId(customPropMap.get(PropertyType.CATEGORY.name()).getId())
+                                .options(List.of(
+                                        new DataExchangeOptionModel(
+                                                UUID.fromString("0000000-0000-0000-0005-000000000003"),
+                                                dxProp.getOptions().get(0),
+                                                List.of(option1.getId()),
+                                                List.of())))
                                 .build();
                     }
                     return null;
@@ -308,12 +353,10 @@ public class GdbGelderlandExportTest {
         PropertyModel municipalityFixedProp = customProps.stream()
                 .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
 
-        // Create a map from the custom property id to the custom property definition
-        Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
-
+        var customPropsTool = new CustomPropsTool(customProps);
         var result = GdbGelderlandExport.getProjectFeature(
                 project,
-                customPropsMap,
+                customPropsTool,
                 ranges,
                 municipalityFixedProp,
                 dxConfig,
