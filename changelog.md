@@ -5,7 +5,7 @@
 ### ADDED
 
 - Added displaying of errors in regard to missing mandatory entries to the export page and have the UI jump to the errors section for clarity
-- Added authentication via oauth to PZH export page
+- Add Gelderland export
 
 ### CHANGED
 
