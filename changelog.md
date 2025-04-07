@@ -1,5 +1,25 @@
 # Change log
 
+## DIWI RELEASE 1.11.0
+
+### ADDED
+
+- Added displaying of errors in regard to missing mandatory entries to the export page and have the UI jump to the errors section for clarity
+- Add Gelderland export
+
+### CHANGED
+
+- Filters on export pages now correspond to the export's minimum confidentiality level
+
+### FIXED
+
+- Fixed an issue where deleted custom properties and deleted custom categories would be persisted in the project
+- Fixed a bug where the scroll bar would not appear on policy goals page when browser is custom sized
+
+### UPDATED
+
+- Updated deprecated packages
+
 ## DIWI RELEASE 1.10.0
 
 This release focuses on exporting data for other purposes than provincial monitors.

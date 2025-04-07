@@ -12,6 +12,7 @@ import {
     ValidationError,
     getExportTypes,
     ExportType,
+    PriceCategories,
 } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
@@ -19,10 +20,11 @@ import ActionNotAllowed from "./ActionNotAllowed";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
-import { exportSettings, updateExportSettings } from "../Paths";
+import { exchangeimportdata, exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
 import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
 import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
+import ExportMappingPriceCategories from "../components/price-categories/ExportMappingPriceCategories";
 
 type ExportOption = {
     id: ExportType;
@@ -61,17 +63,33 @@ function ExportAdminPage() {
     const { allowedActions } = useContext(UserContext);
     const navigate = useNavigate();
     const [exportTypes, setExportTypes] = useState<ExportType[]>([]);
+    const [visibleOptions, setVisibleOptions] = useState<{ [key: string]: boolean }>({});
+
+    const [exportPriceCategories, setExportPriceCategories] = useState<PriceCategories>();
+
+    const toggleOptions = (propertyId: string) => {
+        setVisibleOptions((prev) => ({
+            ...prev,
+            [propertyId]: !prev[propertyId],
+        }));
+    };
 
     //can be mapped using exportTypes, but fields need to be clarified, so hardcoded for now.
     const typeConfig: TypeConfig = useMemo(
         () => ({
             ESRI_ZUID_HOLLAND: {
-                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+                fields: [
+                    { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
+                    { name: "clientId", label: t("admin.export.clientId"), type: "text", mandatory: true },
+                ],
             },
             GEO_JSON: {
                 fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
             },
             EXCEL: {
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+            },
+            GDB_GELDERLAND: {
                 fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
             },
         }),
@@ -101,6 +119,8 @@ function ExportAdminPage() {
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
     const { customProperties: unfilteredCustomProperties, fetchCustomProperties } = useCustomPropertyStore();
 
+    const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
+
     useEffect(() => {
         if (id) return;
         setFormData(generateInitialState(type));
@@ -120,16 +140,44 @@ function ExportAdminPage() {
         if (id) {
             const fetchData = async () => {
                 const data = await getExportDataById(id);
-                const { properties, valid, validationErrors, ...formData } = data;
+                const { properties, valid, validationErrors, priceCategories, ...formData } = data;
+
+                const updatedProperties = properties?.map((property) => {
+                    if (!customProperties.some((customProp) => customProp.id === property.customPropertyId)) {
+                        property.customPropertyId = undefined;
+                        if (property.options) {
+                            property.options = property.options.map((option) => ({
+                                ...option,
+                                propertyCategoryValueIds: [],
+                            }));
+                        }
+                    }
+                    if (property.options) {
+                        const matchingCustomProperty = customProperties.find((customProperty) => customProperty.id === property.customPropertyId);
+                        property.options.forEach((option) => {
+                            if (matchingCustomProperty) {
+                                option.propertyCategoryValueIds = option?.propertyCategoryValueIds?.filter((id) =>
+                                    matchingCustomProperty?.categories?.some((category) => category.id === id && !category.disabled),
+                                );
+
+                                option.propertyOrdinalValueIds = option?.propertyOrdinalValueIds?.filter((id) =>
+                                    matchingCustomProperty?.ordinals?.some((ordinal) => ordinal.id === id && !ordinal.disabled),
+                                );
+                            }
+                        });
+                    }
+                    return property;
+                });
+
                 setFormData(formData);
-                setProperties(properties || []);
+                setProperties(updatedProperties || []);
                 setType({ id: data.type as ExportType, name: t(`admin.export.${data.type}`) });
+                setExportPriceCategories(priceCategories);
             };
             fetchData();
         }
-    }, [id, t]);
-
-    const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -148,15 +196,20 @@ function ExportAdminPage() {
                 id: id || "",
                 name: formData?.name ?? "",
                 type: type.id,
-                ...(formData?.apiKey && { apiKey: formData.apiKey }),
+                clientId: formData?.clientId,
                 projectUrl: formData?.projectUrl ?? "",
                 ...(id && { properties }),
+                priceCategories: exportPriceCategories,
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setValidationErrors(data.validationErrors || []);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
-            if (!id) {
+            if (type.id !== "ESRI_ZUID_HOLLAND" && type.id !== "GDB_GELDERLAND") {
+                navigate(exchangeimportdata.toPath());
+            } else if (!id) {
                 navigate(updateExportSettings.toPath({ id: data.id }));
+            } else if (!data.validationErrors || data.validationErrors.length === 0) {
+                navigate(exchangeimportdata.toPath());
             }
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "error");
@@ -192,7 +245,14 @@ function ExportAdminPage() {
             ? matchingCustomProperty.categories
             : matchingCustomProperty?.ordinals?.length
               ? matchingCustomProperty.ordinals
-              : [];
+              : matchingCustomProperty?.ranges?.length
+                ? matchingCustomProperty.ranges.map((range) => ({
+                      id: range.id,
+                      name: range.name,
+                      disabled: range.disabled,
+                  }))
+                : [];
+
         return {
             id: property.id,
             name: property.name,
@@ -240,6 +300,13 @@ function ExportAdminPage() {
                     </Grid>
                 ))}
 
+                <ExportMappingPriceCategories
+                    priceCategories={exportPriceCategories}
+                    setPriceCategories={setExportPriceCategories}
+                    customProperties={customProperties}
+                    mapPropertyToCustomDefinition={mapPropertyToCustomDefinition}
+                />
+
                 {properties.map((property, index) => {
                     const selectedOption = customProperties.find((customProperty) => customProperty.id === property.customPropertyId);
                     const error = validationErrors.find((error) => error.dxProperty === property.name);
@@ -286,6 +353,17 @@ function ExportAdminPage() {
                                 error={error ? t(`exchangeData.validationErrors.${error.errorCode}`) : ""}
                             />
                             {selectedOption &&
+                                property.id &&
+                                (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
+                                property.options &&
+                                property.options.length > 0 && (
+                                    <Button onClick={() => property.id && toggleOptions(property.id)}>
+                                        {!visibleOptions[property.id] ? t("admin.export.hideOptions") : t("admin.export.showOptions")}
+                                    </Button>
+                                )}
+                            {property.id &&
+                                !visibleOptions[property.id] &&
+                                selectedOption &&
                                 (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
                                 property?.options?.map((option, optionIndex) => (
                                     <Box key={optionIndex} marginLeft={10}>

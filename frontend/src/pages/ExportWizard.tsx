@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { Grid, Box, Typography, Alert, Stack, Accordion, AccordionSummary, AccordionDetails, List } from "@mui/material";
 import { downloadExportData, ExportData, exportProjects, ExportType, getExportDataById } from "../api/exportServices";
 import { t } from "i18next";
@@ -13,6 +13,7 @@ import { getAllowedConfidentialityLevels } from "../utils/exportUtils";
 import { ConfidentialityLevel } from "../types/enums";
 import { GenericOptionType } from "../components/project/ProjectsTableView";
 import { confidentialityLevelOptions, ConfidentialityLevelOptionsType } from "../components/table/constants";
+import useAlert from "../hooks/useAlert";
 
 type DownloadError = {
     cat1?: string;
@@ -34,16 +35,23 @@ const ExportWizard = () => {
     const [errors, setErrors] = useState<DownloadError[]>([]);
     const [params] = useSearchParams();
     const [exportData, setExportData] = useState<ExportData>();
-    const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptionsType>>({
-        id: "EXTERNAL_REGIONAL",
-        name: "5_EXTERNAL_REGIONAL",
-    });
+    const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptionsType>>();
+    const { setAlert } = useAlert();
+    const errorSectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!exportId) return;
         const fetchData = async () => {
             const exportdata = await getExportDataById(exportId);
             setExportData(exportdata);
+
+            const matchedOption = confidentialityLevelOptions.find((option) => option.id === exportdata.minimumConfidentiality);
+            setConfidentialityLevel(
+                matchedOption || {
+                    id: "EXTERNAL_REGIONAL",
+                    name: "5_EXTERNAL_REGIONAL",
+                },
+            );
         };
         fetchData();
     }, [exportId]);
@@ -55,13 +63,22 @@ const ExportWizard = () => {
             if (matchedOption) {
                 setConfidentialityLevel(matchedOption);
             } else {
-                setConfidentialityLevel({
-                    id: "EXTERNAL_REGIONAL",
-                    name: "5_EXTERNAL_REGIONAL",
-                });
+                const defaultOption = confidentialityLevelOptions.find((option) => option.id === exportData?.minimumConfidentiality);
+                setConfidentialityLevel(
+                    defaultOption || {
+                        id: "EXTERNAL_REGIONAL",
+                        name: "5_EXTERNAL_REGIONAL",
+                    },
+                );
             }
         }
-    }, [params]);
+    }, [params, exportData]);
+
+    useEffect(() => {
+        if (errors.length > 0 && errorSectionRef.current) {
+            errorSectionRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [errors]);
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -71,14 +88,21 @@ const ExportWizard = () => {
         navigate(exchangeimportdata.toPath());
     };
 
-    //this function doesnt do anything at the moment, functionality not implemented
-    const handleExportProjects = async () => {
+    const handleExportProjects = async (token: string | null, userName: string | null) => {
         if (!exportId) return;
         try {
-            await exportProjects(exportId, selectedProjects);
-            console.log("Export successful");
-        } catch (error) {
-            console.error("Export failed", error);
+            const allowedConfidentialityLevels = selectedConfidentialityLevel
+                ? getAllowedConfidentialityLevels(selectedConfidentialityLevel.id as ConfidentialityLevel)
+                : [];
+
+            await exportProjects(exportId, token, selectedProjects, allowedConfidentialityLevels, userName);
+            setAlert(t("projects.successExport"), "success");
+        } catch (error: unknown) {
+            if (Array.isArray(error)) {
+                setErrors(error);
+            } else {
+                setErrors([{ code: "generic_error" }]);
+            }
         }
     };
 
@@ -87,7 +111,9 @@ const ExportWizard = () => {
 
         try {
             const projectIds = selectedProjects;
-            const allowedConfidentialityLevels = getAllowedConfidentialityLevels(selectedConfidentialityLevel.id as ConfidentialityLevel);
+            const allowedConfidentialityLevels = selectedConfidentialityLevel
+                ? getAllowedConfidentialityLevels(selectedConfidentialityLevel.id as ConfidentialityLevel)
+                : [];
 
             const body = {
                 exportDate: new Date().toISOString(),
@@ -122,9 +148,10 @@ const ExportWizard = () => {
                         handleBack={handleBack}
                         exportProjects={handleExportProjects}
                         handleDownload={handleDownload}
+                        clientId={exportData?.clientId}
                     />
                     {errors.length > 0 && (
-                        <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }}>
+                        <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }} ref={errorSectionRef}>
                             <Stack>
                                 {errors.map((error) => {
                                     return (
@@ -150,7 +177,7 @@ const ExportWizard = () => {
                                                             },
                                                         }}
                                                     >
-                                                        <PropertyListItem label={t("exchangeDatae.downloadErrorProperties.category")} value={error.cat1} />
+                                                        <PropertyListItem label={t("exchangeData.downloadErrorProperties.category")} value={error.cat1} />
                                                         <PropertyListItem label={t("exchangeData.downloadErrorProperties.category")} value={error.cat2} />
                                                         <PropertyListItem label={t("exchangeData.downloadErrorProperties.fieldName")} value={error.fieldName} />
                                                         <PropertyListItem

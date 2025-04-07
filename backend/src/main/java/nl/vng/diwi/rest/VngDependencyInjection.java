@@ -8,6 +8,7 @@ import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.GoalService;
 import nl.vng.diwi.services.UserService;
+import nl.vng.diwi.services.export.ArcGisProjectExporter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.hk2.api.Factory;
@@ -39,7 +40,7 @@ public class VngDependencyInjection extends AbstractBinder {
     @Log4j2
     static public class SessionFactory implements Factory<Session> {
 
-        private DalFactory dalFactory;
+        private final DalFactory dalFactory;
 
         @Inject
         public SessionFactory(DalFactory dalFactory) {
@@ -80,19 +81,22 @@ public class VngDependencyInjection extends AbstractBinder {
         }
     }
 
-    private DalFactory dalFactory;
-    private ProjectConfig projectConfig;
+    private final DalFactory dalFactory;
+    private final ProjectConfig projectConfig;
+    private final ArcGisProjectExporter arcGisProjectExporter;
 
-    public VngDependencyInjection(DalFactory factory, ProjectConfig projectConfig) {
+    public VngDependencyInjection(DalFactory factory, ProjectConfig projectConfig, ArcGisProjectExporter arcGisProjectExporter) {
         super();
         this.dalFactory = factory;
         this.projectConfig = projectConfig;
+        this.arcGisProjectExporter = arcGisProjectExporter;
     }
 
     @Override
     protected void configure() {
         bind(projectConfig).to(ProjectConfig.class);
         bind(dalFactory).to(DalFactory.class);
+        bind(arcGisProjectExporter).to(ArcGisProjectExporter.class);
         bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
         bind(new KeycloakService(projectConfig.getKcAuthServerUrl(), projectConfig.getKcRealmName(), projectConfig.getKcResourceName(), projectConfig.getKcSecret()));
 
@@ -106,7 +110,7 @@ public class VngDependencyInjection extends AbstractBinder {
 
         bind(new MilestoneService()).to(MilestoneService.class);
         bind(new ProjectService()).to(ProjectService.class);
-        bind(UserGroupService.class).to(UserGroupService.class).in(RequestScoped.class);;
+        bind(UserGroupService.class).to(UserGroupService.class).in(RequestScoped.class);
         bind(UserService.class).to(UserService.class).in(RequestScoped.class);
         bind(new HouseblockService()).to(HouseblockService.class);
         bind(new PropertiesService()).to(PropertiesService.class);
@@ -114,7 +118,6 @@ public class VngDependencyInjection extends AbstractBinder {
         bind(new GeoJsonImportService()).to(GeoJsonImportService.class);
         bind(new DashboardService()).to(DashboardService.class);
         bind(new GoalService()).to(GoalService.class);
-        bind(new DataExchangeService()).to(DataExchangeService.class);
-
+        bind(new DataExchangeService(arcGisProjectExporter)).to(DataExchangeService.class);
     }
 }

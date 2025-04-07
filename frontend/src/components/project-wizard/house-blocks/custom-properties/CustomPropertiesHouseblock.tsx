@@ -5,6 +5,7 @@ import { WizardCard } from "../../WizardCard";
 import { CustomPropertyValue } from "../../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../../CustomPropertyWidget";
 import { useCustomPropertyStore } from "../../../../hooks/useCustomPropertyStore";
+import { checkDeletedCategories } from "../../../../utils/formValidation";
 
 type Props = {
     readOnly: boolean;
@@ -40,13 +41,14 @@ export const CustomPropertiesHouseblock = ({ readOnly, customPropertyValues, set
             {customDefinitions.length > 0 &&
                 customDefinitions.map((property) => {
                     const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
+                    const filteredCustomValue = customValue ? checkDeletedCategories(customValue, property) : customValue;
                     return (
                         property.propertyType !== "RANGE_CATEGORY" && (
                             <Stack key={property.id} width="100%">
                                 <LabelComponent required text={property.name} />{" "}
                                 <CustomPropertyWidget
                                     readOnly={readOnly}
-                                    customValue={customValue}
+                                    customValue={filteredCustomValue}
                                     setCustomValue={(newValue) => {
                                         setCustomValue({ ...newValue, customPropertyId: property.id });
                                     }}

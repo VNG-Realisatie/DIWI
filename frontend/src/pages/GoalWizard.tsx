@@ -278,7 +278,7 @@ export function GoalWizard() {
             </Grid>
 
             <Grid item xs={12}>
-                <Box sx={{ backgroundColor: "grey.300", padding: 2 }}>
+                <Box sx={{ backgroundColor: "grey.300", padding: 2, marginBottom: "80px" }}>
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
                             <CategoryInput

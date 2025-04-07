@@ -1,6 +1,5 @@
 package nl.vng.diwi.resources;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -15,18 +14,19 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
+import lombok.NonNull;
 import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchangeType;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
-import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.DataExchangeExportError;
@@ -35,6 +35,7 @@ import nl.vng.diwi.services.DataExchangeService;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Path("/dataexchange")
@@ -45,7 +46,6 @@ public class DataExchangeResource {
     private final DataExchangeService dataExchangeService;
     private final ConfigModel configModel;
 
-    public static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Inject
     public DataExchangeResource(GenericRepository genericRepository, DataExchangeService dataExchangeService, ProjectConfig projectConfig) {
@@ -72,13 +72,19 @@ public class DataExchangeResource {
     }
 
     @GET
+    @Path("/templates")
+    @RolesAllowed(UserActionConstants.VIEW_DATA_EXCHANGES)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<DataExchangeType, DataExchangeTemplate> getTemplates() {
+        return DataExchangeTemplate.templates;
+    }
+
+    @GET
     @Path("/{id}")
     @RolesAllowed(UserActionConstants.VIEW_DATA_EXCHANGES)
     @Produces(MediaType.APPLICATION_JSON)
     public DataExchangeModel getDataExchange(@PathParam("id") UUID dataExchangeUuid) throws VngNotFoundException {
-
         return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
-
     }
 
     @POST
@@ -163,8 +169,16 @@ public class DataExchangeResource {
     @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser) {
-        throw new VngServerErrorException("Not implemented yet");
+    public void exportProjects(@PathParam("id") UUID dataExchangeUuid, @NonNull DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
+        throws VngBadRequestException, VngNotFoundException {
+
+        List<DataExchangeExportError> errors = new ArrayList<>();
+        StreamingOutput exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, dataExchangeExportModel, errors, loggedUser);
+        if (!errors.isEmpty()) {
+            throw new VngBadRequestException(errors);
+        }
+        dataExchangeService.exportProject(exportObj, dataExchangeExportModel.getToken(), dataExchangeExportModel.getFilename(),
+            dataExchangeExportModel.getUsername());
     }
 
     @POST

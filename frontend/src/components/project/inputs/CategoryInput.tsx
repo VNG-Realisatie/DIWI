@@ -22,7 +22,7 @@ type CategoryInputProps = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     values: any;
     setValue: SetValueFunction;
-    nullable?: boolean; // Not implemented
+    nullable?: boolean;
     readOnly: boolean;
     mandatory: boolean;
     title?: string;
@@ -52,6 +52,7 @@ const getTooltipText = (hasTooltipOption: boolean, tooltipInfoText: string, opti
 const CategoryInput = ({
     values,
     setValue,
+    nullable = true,
     readOnly,
     mandatory,
     title,
@@ -121,6 +122,7 @@ const CategoryInput = ({
             value={values}
             filterSelectedOptions
             onChange={setValue}
+            disableClearable={!nullable}
             renderInput={(params) => (
                 <>
                     <TextField {...params} variant="outlined" error={hasError} helperText={helperText} />

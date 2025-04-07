@@ -58,6 +58,9 @@ export interface paths {
     "/rest/dataexchange/{id}/export": {
         post: operations["exportProjects"];
     };
+    "/rest/dataexchange/templates": {
+        get: operations["getTemplates"];
+    };
     "/rest/dataexchange/types": {
         get: operations["getTypes"];
     };
@@ -219,15 +222,6 @@ export interface components {
             municipalityName?: string;
             regionName?: string;
             provinceName?: string;
-            /** @enum {string} */
-            minimumExportConfidentiality?:
-                | "PRIVATE"
-                | "INTERNAL_CIVIL"
-                | "INTERNAL_MANAGEMENT"
-                | "INTERNAL_COUNCIL"
-                | "EXTERNAL_REGIONAL"
-                | "EXTERNAL_GOVERNMENTAL"
-                | "PUBLIC";
         };
         LocationModel: {
             /** Format: double */
@@ -296,11 +290,22 @@ export interface components {
             id: string;
             name: string;
             /** @enum {string} */
-            type: "ESRI_ZUID_HOLLAND" | "GEO_JSON";
+            type: "ESRI_ZUID_HOLLAND" | "GDB_GELDERLAND" | "GEO_JSON" | "EXCEL";
+            /** @enum {string} */
+            minimumConfidentiality?:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
             apiKey?: string;
+            clientId?: string;
             projectUrl?: string;
             projectDetailUrl?: string;
             valid?: boolean;
+            priceCategories?: components["schemas"]["PriceCategories"];
             properties?: components["schemas"]["DataExchangePropertyModel"][];
             validationErrors?: components["schemas"]["ValidationError"][];
         };
@@ -324,6 +329,15 @@ export interface components {
             singleSelect?: boolean;
             options?: components["schemas"]["DataExchangeOptionModel"][];
         };
+        PriceCategories: {
+            rent: components["schemas"]["PriceCategoryMapping"][];
+            buy: components["schemas"]["PriceCategoryMapping"][];
+        };
+        PriceCategoryMapping: {
+            /** @enum {string} */
+            name: "KOOP1" | "KOOP2" | "KOOP3" | "KOOP4" | "KOOP_ONB" | "HUUR1" | "HUUR2" | "HUUR3" | "HUUR4" | "HUUR_ONB";
+            categoryValueIds: string[];
+        };
         ValidationError: {
             dxProperty?: string;
             diwiOption?: string;
@@ -343,7 +357,46 @@ export interface components {
                 | "EXTERNAL_GOVERNMENTAL"
                 | "PUBLIC"
             )[];
+            token?: string;
+            filename?: string;
+            username?: string;
             confidentialityLevelsAsStrings?: string[];
+        };
+        DataExchangeTemplate: {
+            properties?: components["schemas"]["TemplateProperty"][];
+            /** @enum {string} */
+            minimumConfidentiality?:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
+            fileExtension?: string;
+            priceCategoryMappings?: ("KOOP1" | "KOOP2" | "KOOP3" | "KOOP4" | "KOOP_ONB" | "HUUR1" | "HUUR2" | "HUUR3" | "HUUR4" | "HUUR_ONB")[];
+            priceCategoryPeriods?: components["schemas"]["PriceCategoryPeriod"][];
+        };
+        PriceCategory: {
+            /** @enum {string} */
+            category?: "KOOP1" | "KOOP2" | "KOOP3" | "KOOP4" | "KOOP_ONB" | "HUUR1" | "HUUR2" | "HUUR3" | "HUUR4" | "HUUR_ONB";
+            /** Format: int64 */
+            maxValue?: number;
+        };
+        PriceCategoryPeriod: {
+            /** Format: date */
+            validUntil?: string;
+            categoriesBuy?: components["schemas"]["PriceCategory"][];
+            categoriesRent?: components["schemas"]["PriceCategory"][];
+        };
+        TemplateProperty: {
+            name?: string;
+            /** @enum {string} */
+            objectType?: "PROJECT" | "WONINGBLOK";
+            propertyTypes?: ("BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY")[];
+            mandatory?: boolean;
+            singleSelect?: boolean;
+            options?: string[];
         };
         GeographyOptionModel: {
             brkGemeenteCode?: string;
@@ -1201,12 +1254,24 @@ export interface operations {
             };
         };
     };
+    getTemplates: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["DataExchangeTemplate"];
+                    };
+                };
+            };
+        };
+    };
     getTypes: {
         responses: {
             /** @description default response */
             default: {
                 content: {
-                    "application/json": ("ESRI_ZUID_HOLLAND" | "GEO_JSON")[];
+                    "application/json": ("ESRI_ZUID_HOLLAND" | "GDB_GELDERLAND" | "GEO_JSON" | "EXCEL")[];
                 };
             };
         };

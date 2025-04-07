@@ -1,8 +1,17 @@
 import { ConfidentialityLevel } from "../types/enums";
-import { getJson, postJson, putJson, deleteJson, downloadPost } from "../utils/requests";
+import { components } from "../types/schema";
+import { getJson, postJson, putJson, deleteJson, downloadPost, postJsonParcedError } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
-export type ExportType = "ESRI_ZUID_HOLLAND" | "GEO_JSON" | "EXCEL";
+export type ExportType = "ESRI_ZUID_HOLLAND" | "GDB_GELDERLAND" | "GEO_JSON" | "EXCEL";
+
+const exportTypeToFileExtension: { [key in ExportType]: string } = {
+    ESRI_ZUID_HOLLAND: "geojson",
+    GDB_GELDERLAND: "gdb.zip",
+    GEO_JSON: "geojson",
+    EXCEL: "xlsx",
+};
+export type PriceCategories = components["schemas"]["PriceCategories"];
 
 export type PropertyOption = {
     id: string;
@@ -26,12 +35,14 @@ export type ExportData = {
     id: string;
     name: string;
     type: string;
+    clientId?: string;
     apiKey?: string;
     projectUrl?: string;
     properties?: ExportProperty[];
     valid?: boolean;
     validationErrors?: ValidationError[];
     minimumConfidentiality?: ConfidentialityLevel;
+    priceCategories?: PriceCategories;
 };
 
 export type ValidationError = {
@@ -68,14 +79,31 @@ export async function deleteExportData(id: string): Promise<void> {
 }
 
 export async function downloadExportData(id: string, body: DownloadType, type: ExportType): Promise<void> {
-    return downloadPost(`${API_URI}/dataexchange/${id}/download`, type === "EXCEL" ? "export.xlsx" : "export.geojson", body);
+    const fileExtension = exportTypeToFileExtension[type];
+    const fileName = `export.${fileExtension}`;
+    return downloadPost(`${API_URI}/dataexchange/${id}/download`, fileName, body);
 }
 
-//this dunction needs to be updated
-export async function exportProjects(exportId: string, projectIds?: string[]): Promise<void> {
-    const url = `${API_URI}/projects/export/${exportId}`;
-    const body = projectIds && projectIds.length > 0 ? { projectIds } : undefined;
-    await postJson(url, body);
+export async function exportProjects(
+    exportId: string,
+    token: string | null,
+    projectIds: string[],
+    confidentialityLevels: string[],
+    userName: string | null,
+): Promise<void> {
+    const url = `${API_URI}/dataexchange/${exportId}/export`;
+    const exportDate = new Date().toISOString().split("T")[0];
+    const exportTime = new Date().toISOString().split("T")[1].split(".")[0].replace(/:/g, "-");
+    const filename = `export_${exportDate}_${exportTime}`;
+    const body = {
+        filename,
+        projectIds: projectIds && projectIds.length > 0 ? projectIds : undefined,
+        confidentialityLevels: projectIds && projectIds.length === 0 ? confidentialityLevels : undefined,
+        token,
+        exportDate,
+        username: userName,
+    };
+    return postJsonParcedError(url, body);
 }
 
 export async function getExportTypes(): Promise<ExportType[]> {

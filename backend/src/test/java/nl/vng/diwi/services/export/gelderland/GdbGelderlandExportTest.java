@@ -1,0 +1,387 @@
+package nl.vng.diwi.services.export.gelderland;
+
+import static nl.vng.diwi.dal.entities.enums.PropertyType.CATEGORY;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import nl.vng.diwi.models.SelectDisabledModel;
+import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+
+import nl.vng.diwi.dal.entities.DataExchangeType;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.CategoryPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.HouseblockExportSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.NumericPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.OwnershipValueSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.TextPropertyModel;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.ObjectType;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
+import nl.vng.diwi.dal.entities.enums.PropertyType;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate;
+import nl.vng.diwi.generic.Constants;
+import nl.vng.diwi.generic.Json;
+import nl.vng.diwi.generic.ResourceUtil;
+import nl.vng.diwi.models.DataExchangeModel;
+import nl.vng.diwi.models.DataExchangeOptionModel;
+import nl.vng.diwi.models.DataExchangePropertyModel;
+import nl.vng.diwi.models.DataExchangePropertyModel.DataExchangePropertyModelBuilder;
+import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.RangeSelectDisabledModel;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.DataExchangeExportError;
+import nl.vng.diwi.services.export.CustomPropsTool;
+import nl.vng.diwi.services.export.DataExchangeConfigForExport;
+import nl.vng.diwi.testutil.ProjectsUtil;
+
+public class GdbGelderlandExportTest {
+    @Test
+    void createGdb() throws Exception {
+        // Some constants
+        LocalDate exportDate = LocalDate.of(2025, 3, 2); // Same as middle house block so we have future and past blocks
+        LoggedUser user = LoggedUser.builder()
+                .firstName("first")
+                .lastName("last")
+                .build();
+
+        // Create some custom props
+        List<PropertyModel> customProps = List.of(
+                PropertyModel.builder()
+                        .id(UUID.randomUUID())
+                        .name("text")
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
+                        .build(),
+                PropertyModel.builder()
+                        .id(UUID.randomUUID())
+                        .name(PropertyType.NUMERIC.name())
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.NUMERIC)
+                        .type(PropertyKind.CUSTOM)
+                        .build());
+
+        // Make it easy to find the custom prop
+        Map<String, PropertyModel> customPropMap = customProps.stream()
+                .collect(Collectors.toMap(PropertyModel::getName, p -> p));
+
+        // Create a project with some blocks
+        ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
+                .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
+                .name("project name")
+                .creation_date(LocalDate.of(2025, 1, 1))
+                .last_edit_date(LocalDate.of(2025, 2, 1))
+                .endDate(LocalDate.of(2025, 12, 1))
+                .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
+                .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
+                .projectPhase(ProjectPhase._5_PREPARATION)
+                .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
+                .planningPlanStatus(List.of(PlanStatus._2B_VASTGESTELD_MET_UITWERKING_NODIG))
+                .textProperties(List.of(
+                        new TextPropertyModel(customPropMap.get("text").getId(), "text_value")))
+                .numericProperties(List.of(
+                        new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
+                .houseblocks(List.of(
+                        HouseblockExportSqlModel.builder()
+                                .name("block2")
+                                .houseblockId(UUID.randomUUID())
+                                .mutationAmount(2)
+                                .mutationKind(MutationType.CONSTRUCTION)
+                                .deliveryYear(2025)
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(2)
+                                                .ownershipType(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)
+                                                .ownershipRentalValue(100l)
+                                                .build()))
+                                .meergezinswoning(0)
+                                .eengezinswoning(2)
+                                .endDate(LocalDate.of(2025, 3, 2))
+                                .build()))
+                .build();
+
+        var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
+        List<DataExchangePropertyModel> dxProperties = template.getProperties().stream()
+                .map(dxProp -> {
+                    DataExchangePropertyModelBuilder builder = DataExchangePropertyModel.builder()
+                            .name(dxProp.getName());
+                    if (dxProp.getPropertyTypes().contains(PropertyType.TEXT)) {
+                        return builder.customPropertyId(customPropMap.get("text").getId())
+                                .build();
+                    } else if (dxProp.getPropertyTypes().contains(PropertyType.NUMERIC)) {
+                        return builder.customPropertyId(customPropMap.get(PropertyType.NUMERIC.name()).getId())
+                                .build();
+                    }
+                    return null;
+                })
+                .filter(dxProp -> dxProp != null)
+                .toList();
+
+        var dxConfig = new DataExchangeConfigForExport(
+                DataExchangeModel.builder()
+                        .properties(dxProperties)
+                        .build());
+
+        List<DataExchangeExportError> errors = new ArrayList<>();
+
+        var result = GdbGelderlandExport.buildExportObject(
+                List.of(project),
+                customProps,
+                dxConfig,
+                DataExchangeTemplate.gelderlandTemplate,
+                exportDate,
+                errors,
+                user);
+
+        File outputFile = new File("src/test/resources/GdbGelderlandTest/result.gdb.zip");
+        try (FileOutputStream output = new FileOutputStream(outputFile)) {
+            result.write(output);
+        }
+        assertThat(errors).isEmpty();
+
+        var process = new ProcessBuilder(List.of("/usr/bin/ogrinfo", outputFile.getAbsolutePath()))
+                .start();
+
+        process.waitFor();
+
+        assertThat(new String(process.getInputStream().readAllBytes()))
+                .isEqualTo("""
+                        INFO: Open of `%s'
+                              using driver `OpenFileGDB' successful.
+                        Layer: Planregistratie (Multi Polygon)
+                        Layer: DetailPlanning (None)
+                        """.formatted(outputFile.getAbsolutePath()));
+    }
+
+    @Test
+    void testGetProjectFeature() throws Exception {
+        // Some constants
+        final long huur1 = 700_00;
+        final long huur2 = 850_00;
+        final long huur3 = 1000_00;
+        final long huur4 = 1500_00l;
+
+        LocalDate exportDate = LocalDate.of(2025, 3, 2); // Same as middle house block so we have future and past blocks
+        String targetCrs = "EPSG:28992";
+        LoggedUser user = LoggedUser.builder()
+                .firstName("first")
+                .lastName("last")
+                .build();
+
+        // Create an option for the categorical properties
+        SelectDisabledModel option1 = new SelectDisabledModel();
+        option1.setId(UUID.fromString("0000000-0000-0000-0004-000000000001"));
+        option1.setDisabled(false);
+        option1.setName("option1");
+
+        // Create some custom properties
+        List<PropertyModel> customProps = List.of(
+                PropertyModel.builder()
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000001"))
+                        .name(PropertyType.TEXT.name())
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
+                        .build(),
+                PropertyModel.builder()
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000002"))
+                        .name(PropertyType.NUMERIC.name())
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.NUMERIC)
+                        .type(PropertyKind.CUSTOM)
+                        .build(),
+                PropertyModel.builder()
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000003"))
+                        .name(CATEGORY.name())
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.CATEGORY)
+                        .type(PropertyKind.CUSTOM)
+                        .categories(List.of(option1))
+                        .build(),
+                PropertyModel.builder()
+                        .id(UUID.fromString("0000000-0000-0000-0003-000000000004"))
+                        .name(Constants.FIXED_PROPERTY_GEOMETRY)
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.TEXT)
+                        .type(PropertyKind.CUSTOM)
+                        .build());
+
+        // Make it easy to find the custom prop
+        Map<String, PropertyModel> customPropMap = customProps.stream()
+                .collect(Collectors.toMap(PropertyModel::getName, p -> p));
+
+        // Create a project with some blocks
+        ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
+                .projectId(UUID.fromString("0000000-0000-0000-0002-000000000001"))
+                .name("project name")
+                .creation_date(LocalDate.of(2025, 1, 1))
+                .last_edit_date(LocalDate.of(2025, 2, 1))
+                .endDate(LocalDate.of(2025, 12, 1))
+                // .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
+                .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
+                .projectPhase(ProjectPhase._5_PREPARATION)
+                .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
+                .planningPlanStatus(List.of(PlanStatus._2B_VASTGESTELD_MET_UITWERKING_NODIG))
+                .textProperties(List.of(
+                        new TextPropertyModel(customPropMap.get(PropertyType.TEXT.name()).getId(), "text_value"),
+                        new TextPropertyModel(customPropMap.get(Constants.FIXED_PROPERTY_GEOMETRY).getId(), ProjectsUtil.PLOT_JSON_STRING)))
+                .numericProperties(List.of(
+                        new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
+                .categoryProperties(List.of(CategoryPropertyModel.builder()
+                        .propertyId(customPropMap.get(PropertyType.CATEGORY.name()).getId())
+                        .optionValues(List.of(option1.getId()))
+                        .build()))
+                .houseblocks(List.of(
+                        HouseblockExportSqlModel.builder()
+                                .name("block1")
+                                .houseblockId(UUID.fromString("0000000-0000-0000-0001-000000000001"))
+                                .mutationAmount(4)
+                                .mutationKind(MutationType.CONSTRUCTION)
+                                .deliveryYear(2025)
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder() // A house with a single value
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValue(huur2)
+                                                .build(),
+                                        OwnershipValueSqlModel.builder() // A house with a min value
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValueRangeMin(huur4)
+                                                .build(),
+                                        OwnershipValueSqlModel.builder() // A house with a max value
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValueRangeMin(0l)
+                                                .ownershipRentalValueRangeMax(huur1)
+                                                .build(),
+                                        OwnershipValueSqlModel.builder() // A house with a range
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValueRangeMin(huur2)
+                                                .ownershipRentalValueRangeMax(huur2 + 1)
+                                                .build()))
+                                .meergezinswoning(4)
+                                .eengezinswoning(0)
+                                .endDate(LocalDate.of(2025, 3, 1))
+                                .build(),
+                        HouseblockExportSqlModel.builder()
+                                .name("block2")
+                                .houseblockId(UUID.fromString("0000000-0000-0000-0001-000000000002"))
+                                .mutationAmount(2)
+                                .mutationKind(MutationType.CONSTRUCTION)
+                                .deliveryYear(2025)
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(2)
+                                                .ownershipType(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)
+                                                .ownershipRentalValue(huur3)
+                                                .build()))
+                                .meergezinswoning(0)
+                                .eengezinswoning(2)
+                                .endDate(LocalDate.of(2025, 3, 2))
+                                .build(),
+                        HouseblockExportSqlModel.builder()
+                                .name("block3")
+                                .houseblockId(UUID.fromString("0000000-0000-0000-0001-000000000003"))
+                                .mutationAmount(1)
+                                .mutationKind(MutationType.DEMOLITION)
+                                .deliveryYear(2026)
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.KOOPWONING)
+                                                .ownershipValue(100l)
+                                                .build()))
+                                .meergezinswoning(0)
+                                .eengezinswoning(1)
+                                .endDate(LocalDate.of(2025, 3, 3))
+                                .build()))
+                .build();
+
+        var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
+        List<DataExchangePropertyModel> dxProperties = template.getProperties().stream()
+                .map(dxProp -> {
+                    DataExchangePropertyModelBuilder builder = DataExchangePropertyModel.builder()
+                            .name(dxProp.getName());
+                    if (dxProp.getPropertyTypes().contains(PropertyType.TEXT)) {
+                        return builder.customPropertyId(customPropMap.get(PropertyType.TEXT.name()).getId())
+                                .build();
+                    } else if (dxProp.getPropertyTypes().contains(PropertyType.NUMERIC)) {
+                        return builder.customPropertyId(customPropMap.get(PropertyType.NUMERIC.name()).getId())
+                                .build();
+                    } else if (dxProp.getPropertyTypes().contains(CATEGORY)) {
+                        return builder
+                                .customPropertyId(customPropMap.get(PropertyType.CATEGORY.name()).getId())
+                                .options(List.of(
+                                        new DataExchangeOptionModel(
+                                                UUID.fromString("0000000-0000-0000-0005-000000000003"),
+                                                dxProp.getOptions().get(0),
+                                                List.of(option1.getId()),
+                                                List.of())))
+                                .build();
+                    }
+                    return null;
+                })
+                .filter(dxProp -> dxProp != null)
+                .toList();
+        var dxConfig = new DataExchangeConfigForExport(
+                DataExchangeModel.builder()
+                        .properties(dxProperties)
+                        .build());
+
+        List<DataExchangeExportError> errors = new ArrayList<>();
+
+        var ranges = new ArrayList<RangeSelectDisabledModel>();
+
+        PropertyModel municipalityFixedProp = customProps.stream()
+                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
+
+        var customPropsTool = new CustomPropsTool(customProps);
+        var result = GdbGelderlandExport.getProjectFeature(
+                project,
+                customPropsTool,
+                ranges,
+                municipalityFixedProp,
+                dxConfig,
+                DataExchangeTemplate.gelderlandTemplate,
+                exportDate,
+                errors,
+                targetCrs,
+                user);
+
+        assertThat(errors).isEmpty();
+
+        // Use JSON for comparing the large objects as that makes comparing easier. e.g. using an external diff tool.
+        Json.SORTED_MAPPER
+                .writerWithDefaultPrettyPrinter()
+                .writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result.getPlanRegistration());
+        var expected = ResourceUtil.getResourceAsString("GdbGelderlandTest/feature.expected.json");
+
+        JSONAssert.assertEquals(expected, Json.SORTED_MAPPER.writeValueAsString(result.getPlanRegistration()), JSONCompareMode.NON_EXTENSIBLE);
+
+        Json.SORTED_MAPPER
+                .writerWithDefaultPrettyPrinter()
+                .writeValue(new File("src/test/resources/GdbGelderlandTest/detailPlanning.actual.json"), result.getDetailPlanning());
+        var expectedDetailPlanningJson = ResourceUtil.getResourceAsString("GdbGelderlandTest/detailPlanning.expected.json");
+        var actualDetailPlanningJson = Json.SORTED_MAPPER.writeValueAsString(result.getDetailPlanning());
+
+        JSONAssert.assertEquals(expectedDetailPlanningJson, actualDetailPlanningJson, JSONCompareMode.NON_EXTENSIBLE);
+    }
+}

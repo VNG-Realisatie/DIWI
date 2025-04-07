@@ -12,11 +12,12 @@ COPY src ./src/
 RUN --mount=type=cache,target=/root/.m2 \
     mvn package -DskipTests
 
-FROM tomcat:10-jdk17-temurin
+FROM tomcat:10-jdk17-temurin-noble
 
 ARG USER_ID=0
 
 RUN chown ${USER_ID} /usr/local/tomcat/webapps
+RUN apt update && apt-get install -y gdal-bin
 
 USER ${USER_ID}
 

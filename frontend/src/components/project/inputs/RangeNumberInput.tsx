@@ -121,7 +121,7 @@ const RangeNumberInput = ({
     const hasError = shouldDisplayError(mandatory, stringValue, displayError);
 
     useEffect(() => {
-        setStringValue(fromRangeToString(value, isMonetary));
+        setStringValue(value && fromRangeToString(value, isMonetary));
     }, [value, isMonetary]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

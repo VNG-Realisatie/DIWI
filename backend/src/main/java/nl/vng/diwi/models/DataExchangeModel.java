@@ -2,13 +2,14 @@ package nl.vng.diwi.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.OwnershipCategory;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 
@@ -22,12 +23,41 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static nl.vng.diwi.dal.entities.enums.PropertyType.CATEGORY;
+import static nl.vng.diwi.dal.entities.enums.PropertyType.ORDINAL;
+
 @Data
 @With
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 public class DataExchangeModel {
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @With
+    public static class PriceCategoryMapping {
+        @JsonProperty(required = true)
+        OwnershipCategory name;
+
+        @JsonProperty(required = true)
+        List<UUID> categoryValueIds;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @With
+    @Builder
+    public static class PriceCategories {
+        @JsonProperty(required = true)
+        @Builder.Default
+        List<PriceCategoryMapping> rent = new ArrayList<>();
+
+        @JsonProperty(required = true)
+        @Builder.Default
+        List<PriceCategoryMapping> buy = new ArrayList<>();
+    }
 
     @JsonProperty(required = true)
     private UUID id;
@@ -42,19 +72,29 @@ public class DataExchangeModel {
 
     private String apiKey;
 
+    private String clientId;
+
     private String projectUrl;
 
     private String projectDetailUrl;
 
     private Boolean valid;
 
+    /**
+     * If this value is set user can directly map price categories in diwi to the price categories for exports.
+     * Not available for all exports, so can be null
+     */
+    private PriceCategories priceCategories;
+
+    @Builder.Default
     private List<DataExchangePropertyModel> properties = new ArrayList<>();
 
     private List<ValidationError> validationErrors;
 
     public DataExchangeModel(
             DataExchangeState dataExchangeState,
-            boolean includeApiKey) {
+            boolean includeApiKey,
+            DataExchangeTemplate template) {
         this.setId(dataExchangeState.getDataExchange().getId());
         this.setName(dataExchangeState.getName());
         this.setType(dataExchangeState.getType());
@@ -64,8 +104,9 @@ public class DataExchangeModel {
         this.setProjectUrl(dataExchangeState.getProjectUrl());
         this.setValid(dataExchangeState.getValid());
 
-        var template = DataExchangeTemplate.templates.get(dataExchangeState.getType());
         this.setMinimumConfidentiality(template.getMinimumConfidentiality());
+        this.setClientId(dataExchangeState.getClientId());
+        this.setProperties(new ArrayList<>());
     }
 
     public String validateDxState() {
@@ -98,10 +139,10 @@ public class DataExchangeModel {
             Set<UUID> templateOptionIds = new HashSet<>();
             Set<UUID> propOptionIds = new HashSet<>();
             if (templateModel.getOptions() != null) {
-                templateModel.getOptions().stream().forEach(o -> templateOptionIds.add(o.getId()));
+                templateModel.getOptions().forEach(o -> templateOptionIds.add(o.getId()));
             }
             if (propModel.getOptions() != null) {
-                propModel.getOptions().stream().forEach(o -> propOptionIds.add(o.getId()));
+                propModel.getOptions().forEach(o -> propOptionIds.add(o.getId()));
             }
             if (templateOptionIds.size() != propOptionIds.size() || !templateOptionIds.containsAll(propOptionIds)) {
                 return "Model does not include all the options in the template for property " + propModel.getId() + ".";
@@ -128,8 +169,8 @@ public class DataExchangeModel {
                     return baseError + "does not match the expected property type.";
                 } else if (dxProp.getMandatory() && (prop.getMandatory() != dxProp.getMandatory())) {
                     return baseError + "does not have the expected mandatory flag (" + dxProp.getMandatory() + ").";
-                } else if (List.of(PropertyType.CATEGORY, PropertyType.ORDINAL).contains(prop.getPropertyType())
-                        && prop.getSingleSelect() != dxProp.getSingleSelect()) {
+                } else if (List.of(CATEGORY, ORDINAL).contains(prop.getPropertyType())
+                        && (!prop.getSingleSelect() && dxProp.getSingleSelect())) {
                     return baseError + "does not have the expected single select flag.";
                 }
                 if (dxProp.getOptions() != null) {
@@ -178,8 +219,10 @@ public class DataExchangeModel {
         for (DataExchangePropertyModel dxPropModel : this.properties) {
             PropertyModel propertyModel = propertyModels.stream().filter(pm -> pm.getId().equals(dxPropModel.getCustomPropertyId())).findFirst().orElse(null);
             if (propertyModel == null) {
-                validationErrors.add(new ValidationError(dxPropModel.getName(), null, DxValidationError.MISSING_CUSTOM_PROP));
-            } else if (propertyModel.getPropertyType() == PropertyType.CATEGORY && dxPropModel.getOptions() != null) {
+                if (dxPropModel.getMandatory()){
+                    validationErrors.add(new ValidationError(dxPropModel.getName(), null, DxValidationError.MISSING_CUSTOM_PROP));
+                }
+            } else if (propertyModel.getPropertyType() == CATEGORY && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
                     if (dxOption.getPropertyCategoryValueIds() != null && !dxOption.getPropertyCategoryValueIds().isEmpty()) {
@@ -204,7 +247,7 @@ public class DataExchangeModel {
                                 }
                             });
                 }
-            } else if (propertyModel.getPropertyType() == PropertyType.ORDINAL && dxPropModel.getOptions() != null) {
+            } else if (propertyModel.getPropertyType() == ORDINAL && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
                     if (dxOption.getPropertyOrdinalValueIds() != null && !dxOption.getPropertyOrdinalValueIds().isEmpty()) {
@@ -234,11 +277,12 @@ public class DataExchangeModel {
         return this.validationErrors;
     }
 
-    public boolean areStateFieldsDifferent(DataExchangeModel other) {
+    public boolean hasUpdatedStateFields(DataExchangeModel other) {
         return !Objects.equals(this.name, other.name) ||
                 !Objects.equals(this.projectUrl, other.projectUrl) ||
                 !Objects.equals(this.projectDetailUrl, other.projectDetailUrl) ||
                 !Objects.equals(this.apiKey, other.apiKey) ||
+                !Objects.equals(this.clientId, other.clientId) ||
                 !Objects.equals(this.valid, other.valid);
     }
 

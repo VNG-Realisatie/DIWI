@@ -2,14 +2,12 @@ package nl.vng.diwi.services.export.geojson;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.generic.Json;
@@ -18,13 +16,7 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
 
-import lombok.Data;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.BooleanPropertyModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.CategoryPropertyModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.NumericPropertyModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.OrdinalPropertyModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.TextPropertyModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.MutationType;
@@ -32,10 +24,9 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
-import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.PropertyModel;
-import nl.vng.diwi.models.RangeSelectDisabledModel;
+import nl.vng.diwi.services.export.CustomPropsTool;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BlockTypeData;
@@ -49,131 +40,6 @@ import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectLocation;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.SizeData;
 
 public class GeoJSONExport {
-    @Data
-    static public class CustomProps {
-
-        private List<PropertyModel> properties;
-        private Map<UUID, String> optionsMap;
-        private Map<UUID, String> ordinalsMap;
-        private Map<UUID, PropertyModel> customPropsMap;
-        private Map<UUID, RangeSelectDisabledModel> rangeCategories;
-
-        public CustomProps(List<PropertyModel> customProps) {
-            this.properties = customProps;
-
-            optionsMap = customProps.stream()
-                    .flatMap(cp -> cp.getCategories() != null ? cp.getCategories().stream() : Stream.empty())
-                    .collect(Collectors.toMap(option -> option.getId(), option -> option.getName()));
-            ordinalsMap = customProps.stream()
-                    .flatMap(cp -> cp.getOrdinals() != null ? cp.getOrdinals().stream() : Stream.empty())
-                    .collect(Collectors.toMap(option -> option.getId(), option -> option.getName()));
-
-            rangeCategories = customProps.stream()
-                    .flatMap(cp -> cp.getRanges() != null ? cp.getRanges().stream() : Stream.empty())
-                    .collect(Collectors.toMap(option -> option.getId(), option -> option));
-
-            customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
-
-        }
-
-        public PropertyModel get(UUID id) {
-            return customPropsMap.get(id);
-        }
-
-        public PropertyModel get(String propName) {
-            return properties.stream()
-                    .filter(pfp -> pfp.getName().equals(propName))
-                    .findFirst()
-                    .orElse(null);
-        }
-
-        public PropertyModel getCustomProperty(UUID id) {
-            PropertyModel propertyModel = customPropsMap.get(id);
-            if (propertyModel != null && propertyModel.getType().equals(PropertyKind.CUSTOM)) {
-                return propertyModel;
-            }
-            return null;
-        }
-
-        public PropertyModel getCustomProperty(String propName) {
-            return properties.stream()
-                    .filter(pfp -> pfp.getType().equals(PropertyKind.CUSTOM) && pfp.getName().equals(propName))
-                    .findFirst()
-                    .orElse(null);
-        }
-
-        public String getOption(UUID id) {
-            return optionsMap.get(id);
-        }
-
-        public String getOrdinal(UUID id) {
-            return ordinalsMap.get(id);
-        }
-
-        public RangeSelectDisabledModel getRange(UUID id) {
-            return rangeCategories.get(id);
-        }
-
-        public List<String> getOptions(List<UUID> optionIds) {
-            if (optionIds == null) {
-                return List.of();
-            } else {
-                return optionIds.stream()
-                        .map(optionId -> optionsMap.get(optionId))
-                        .toList();
-            }
-        }
-
-        public Map<String, String> getCustomPropertyMap(
-                List<TextPropertyModel> projectTextCustomProps,
-                List<NumericPropertyModel> projectNumericCustomProps,
-                List<BooleanPropertyModel> projectBooleanCustomProps,
-                List<CategoryPropertyModel> projectCategoricalCustomProps,
-                List<OrdinalPropertyModel> projectOrdinalPropertyModels) {
-
-            Map<String, String> customProps = new HashMap<>();
-            for (var prop : projectTextCustomProps) {
-                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
-                if (propertyModel != null) {
-                    customProps.put(propertyModel.getName(), prop.getTextValue());
-                }
-            }
-            for (var prop : projectNumericCustomProps) {
-                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
-                if (propertyModel != null) {
-                    customProps.put(propertyModel.getName(), prop.getValue().toString());
-                }
-            }
-            for (var prop : projectBooleanCustomProps) {
-                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
-                if (propertyModel != null) {
-                    customProps.put(propertyModel.getName(), prop.getBooleanValue().toString());
-                }
-            }
-            for (var prop : projectCategoricalCustomProps) {
-                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
-                if (propertyModel != null) {
-                    String values = prop.getOptionValues()
-                            .stream()
-                            .map(optionId -> getOption(optionId))
-                            .collect(Collectors.joining(","));
-                    customProps.put(propertyModel.getName(), values);
-                }
-            }
-            for (var prop : projectOrdinalPropertyModels) {
-                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
-                if (propertyModel != null) {
-                    String value = getOrdinal(prop.getPropertyValueId());
-                    String min = getOrdinal(prop.getMinPropertyValueId());
-                    String max = getOrdinal(prop.getMaxPropertyValueId());
-                    customProps.put(propertyModel.getName(), value != null ? value : min + "-" + max);
-                }
-            }
-            return customProps;
-        }
-
-    }
-
     static public StreamingOutput buildExportObject(
             List<ProjectExportSqlModelExtended> projects,
             List<PropertyModel> customProps) {
@@ -185,7 +51,7 @@ public class GeoJSONExport {
         crs.getProperties().put("name", targetCrs);
         exportObject.setCrs(crs);
 
-        var customPropsTool = new CustomProps(customProps);
+        var customPropsTool = new CustomPropsTool(customProps);
 
         projects.forEach(project -> exportObject.add(getProjectFeature(
                 project,
@@ -201,10 +67,26 @@ public class GeoJSONExport {
     static private Feature getProjectFeature(
             ProjectExportSqlModelExtended project,
             String targetCrs,
-            CustomProps customPropTool) {
+            CustomPropsTool customPropsTool) {
         var projectFeature = new Feature();
 
-        var multiPolygon = ExportUtil.createPolygonForProject(project.getGeometries(), targetCrs, project.getProjectId());
+        Map<String, String> customProps = customPropsTool.getCustomPropertyMap(
+                project.getTextProperties(),
+                project.getNumericProperties(),
+                project.getBooleanProperties(),
+                project.getCategoryProperties(),
+                project.getOrdinalProperties());
+
+        List<String> geometries = new ArrayList<>();
+        if (project.getGeometries() != null) {
+            geometries.addAll(project.getGeometries());
+        }
+        var importGeometry = customProps.get(Constants.FIXED_PROPERTY_GEOMETRY);
+        if (importGeometry != null) {
+            geometries.add(importGeometry);
+        }
+
+        var multiPolygon = ExportUtil.createPolygonForProject(geometries, targetCrs, project.getProjectId());
         if (!multiPolygon.getCoordinates().isEmpty()) {
             projectFeature.setGeometry(multiPolygon);
         }
@@ -217,38 +99,31 @@ public class GeoJSONExport {
                 .stream()
                 .collect(Collectors.toMap(ps -> translate(ps.getPlanStatus()), ps -> ps.getStartDate()));
 
-        Map<String, String> customProps = customPropTool.getCustomPropertyMap(
-                project.getTextProperties(),
-                project.getNumericProperties(),
-                project.getBooleanProperties(),
-                project.getCategoryProperties(),
-                project.getOrdinalProperties());
-
         Map<UUID, List<UUID>> projectCategoricalCustomProps = project.getCategoryProperties().stream()
                 .collect(Collectors.toMap(ProjectExportSqlModelExtended.CategoryPropertyModel::getPropertyId,
                         ProjectExportSqlModelExtended.CategoryPropertyModel::getOptionValues));
 
-        List<String> municipalities = customPropTool.getOptions(
+        List<String> municipalities = customPropsTool.getOptions(
                 projectCategoricalCustomProps.get(
-                        customPropTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY).getId()));
+                        customPropsTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY).getId()));
 
-        List<String> neighbourhoods = customPropTool.getOptions(
+        List<String> neighbourhoods = customPropsTool.getOptions(
                 projectCategoricalCustomProps.get(
-                        customPropTool.get(Constants.FIXED_PROPERTY_NEIGHBOURHOOD).getId()));
+                        customPropsTool.get(Constants.FIXED_PROPERTY_NEIGHBOURHOOD).getId()));
 
-        List<String> districts = customPropTool.getOptions(
+        List<String> districts = customPropsTool.getOptions(
                 projectCategoricalCustomProps.get(
-                        customPropTool.get(Constants.FIXED_PROPERTY_DISTRICT).getId()));
+                        customPropsTool.get(Constants.FIXED_PROPERTY_DISTRICT).getId()));
 
         LocalDate today = LocalDate.now();
 
-        List<String> municipalityRole = customPropTool.getOptions(
+        List<String> municipalityRole = customPropsTool.getOptions(
                 projectCategoricalCustomProps.get(
-                        customPropTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE).getId()));
+                        customPropsTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE).getId()));
 
-        List<String> priority = customPropTool.getOptions(
+        List<String> priority = customPropsTool.getOptions(
                 projectCategoricalCustomProps.get(
-                        customPropTool.get(Constants.FIXED_PROPERTY_PRIORITY).getId()));
+                        customPropsTool.get(Constants.FIXED_PROPERTY_PRIORITY).getId()));
 
         final var geoJsonProject = GeoJsonProject.builder()
                 .diwiId(project.getProjectId())
@@ -283,7 +158,7 @@ public class GeoJSONExport {
         final var geoJsonBlocks = project.getHouseblocks().stream()
                 .map(block -> {
 
-                    Map<String, String> blockCustomProps = customPropTool.getCustomPropertyMap(
+                    Map<String, String> blockCustomProps = customPropsTool.getCustomPropertyMap(
                             block.getTextProperties(),
                             block.getNumericProperties(),
                             block.getBooleanProperties(),
@@ -305,7 +180,7 @@ public class GeoJSONExport {
                                 var buyRangeId = ov.getOwnershipRangeCategoryId();
                                 var rentRangeId = ov.getOwnershipRentalRangeCategoryId();
                                 var rangeId = buyRangeId != null ? buyRangeId : rentRangeId;
-                                var range = rangeId != null ? customPropTool.getRange(rangeId) : null;
+                                var range = rangeId != null ? customPropsTool.getRange(rangeId) : null;
                                 if (range != null) {
                                     return builder
                                             .min(range.getMin() != null ? range.getMin().doubleValue() / 100 : null)

@@ -18,6 +18,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +37,8 @@ import nl.vng.diwi.models.SingleValueOrRangeModel;
 @NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class ProjectExportSqlModelExtended {
 
     @Id
@@ -51,8 +55,10 @@ public class ProjectExportSqlModelExtended {
     @Getter(AccessLevel.NONE)
     private List<PlanType> planType;
 
-    private LocalDate startDate;
+    private LocalDate creation_date;
+    private LocalDate last_edit_date;
 
+    private LocalDate startDate;
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
@@ -194,6 +200,7 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class TextPropertyModel {
         private UUID propertyId;
         private String textValue;
@@ -201,6 +208,7 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class NumericPropertyModel {
         private UUID propertyId;
         private BigDecimal value;
@@ -221,6 +229,8 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class CategoryPropertyModel {
         private UUID propertyId;
         private List<UUID> optionValues;
@@ -244,6 +254,8 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class HouseblockExportSqlModel {
 
         private UUID houseblockId;
@@ -350,6 +362,8 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class OwnershipValueSqlModel {
         private UUID ownershipId;
         private OwnershipType ownershipType;
@@ -369,17 +383,49 @@ public class ProjectExportSqlModelExtended {
                     return null;
                 } else {
                     return new SingleValueOrRangeModel<>(ownershipRentalValue == null ? null : BigDecimal.valueOf(ownershipRentalValue, 2),
-                        ownershipRentalValueRangeMin == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMin, 2),
-                        ownershipRentalValueRangeMax == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMax, 2));
+                            ownershipRentalValueRangeMin == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMin, 2),
+                            ownershipRentalValueRangeMax == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMax, 2));
                 }
             } else {
                 if (ownershipValue == null && ownershipValueRangeMin == null) {
                     return null;
                 } else {
                     return new SingleValueOrRangeModel<>(ownershipValue == null ? null : BigDecimal.valueOf(ownershipValue, 2),
-                        ownershipValueRangeMin == null ? null : BigDecimal.valueOf(ownershipValueRangeMin, 2),
-                        ownershipValueRangeMax == null ? null : BigDecimal.valueOf(ownershipValueRangeMax, 2));
+                            ownershipValueRangeMin == null ? null : BigDecimal.valueOf(ownershipValueRangeMin, 2),
+                            ownershipValueRangeMax == null ? null : BigDecimal.valueOf(ownershipValueRangeMax, 2));
                 }
+            }
+        }
+
+        public Long getValue() {
+            if (ownershipType == OwnershipType.KOOPWONING) {
+                return getOwnershipValue();
+            } else {
+                return getOwnershipRentalValue();
+            }
+        }
+
+        public Long getMin() {
+            if (ownershipType == OwnershipType.KOOPWONING) {
+                return getOwnershipValueRangeMin();
+            } else {
+                return getOwnershipRentalValueRangeMin();
+            }
+        }
+
+        public Long getMax() {
+            if (ownershipType == OwnershipType.KOOPWONING) {
+                return getOwnershipValueRangeMax();
+            } else {
+                return getOwnershipRentalValueRangeMax();
+            }
+        }
+
+        public UUID getCategoryId() {
+            if (ownershipType == OwnershipType.KOOPWONING) {
+                return getOwnershipRangeCategoryId();
+            } else {
+                return getOwnershipRentalRangeCategoryId();
             }
         }
     }

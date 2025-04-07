@@ -1,6 +1,7 @@
 package nl.vng.diwi.dal;
 
 import nl.vng.diwi.dal.entities.DataExchangeOptionState;
+import nl.vng.diwi.dal.entities.DataExchangePriceCategoryMapping;
 import nl.vng.diwi.dal.entities.DataExchangePropertySqlModel;
 import nl.vng.diwi.dal.entities.DataExchangePropertyState;
 import nl.vng.diwi.dal.entities.DataExchangeState;
@@ -63,5 +64,17 @@ public class DataExchangeDAO extends AbstractRepository {
                 GenericRepository.VNG_SCHEMA_NAME), DataExchangePropertySqlModel.class)
             .setParameter("dataExchangeId", dataExchangeId)
             .getResultList();
+    }
+
+    public List<DataExchangePriceCategoryMapping> getDataExchangePriceMappings(UUID dataExchangeId) {
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
+        return session.createQuery("""
+                FROM DataExchangePriceCategoryMapping pcm
+                LEFT JOIN FETCH pcm.mappings pcms
+                WHERE dataExchange.id = :dataExchangeId
+                ORDER BY ownershipCategory ASC
+                """, DataExchangePriceCategoryMapping.class)
+                .setParameter("dataExchangeId", dataExchangeId)
+                .list();
     }
 }
