@@ -1,63 +1,49 @@
-# vng
+# diwi-source-export
 
-## Script
+## Overview
 
-A description of the scripts in the project
+**DIWI** is a platform designed for Dutch municipalities, providing tools for data management and analysis. This document describes how to set up a development environment and deploy an instance of DIWI on a virtual machine (VM).
 
-### addUsers.sh
+---
 
-Add an admin user to the local development keycloak instance, it will also create a diwi admin role and assign it to the admin user.
+## Architecture
 
-### compose.dev.sh
+- **Backend:** Java, connects to a PostgreSQL database.
+- **Frontend:** React (TypeScript) with Vitejs.
+- **Authentication:** Keycloak (Dockerized).
+- **Email Testing:** Mailhog (Dockerized).
+- **Database:** PostgreSQL.
+- **Containerization:** Docker & Docker Compose for local development and deployment.
 
-Helper script to run one of the compose files in the project
+---
 
-### deploy.backend.dev.sh
+## Tools Used
 
-Run the backend against a database outside of docker.
+| Tool           | Purpose                       |
+| -------------- | ----------------------------- |
+| Docker         | Containerization              |
+| Docker Compose | Multi-container orchestration |
+| PostgreSQL     | Database                      |
+| Keycloak       | Authentication                |
+| Mailhog        | Email testing (local)         |
+| Node.js/NPM    | Frontend development          |
+| Java (Maven)   | Backend development           |
+| GDAL           | GIS tools                     |
 
-Start a local keycloak instance as well.
+---
 
-Shouldn't require any extra configuration by default, but does require a diwi database to be present.
+## Getting Started: Development Environment
 
-### deploy.keycloak.dev.sh
+### Prerequisites
 
-Starts a keycloak instance in a docker container
+- **PostgreSQL:** `sudo apt install postgresql`
+- **GDAL:** `sudo apt install gdal-bin`
+- **Docker & Docker Compose:** [Install Docker](https://docs.docker.com/get-docker/)
+- **Node.js & NPM:** [Install Node.js](https://nodejs.org/)
+- **Java 17+ & Maven:** [Install Java](https://adoptium.net/) and [Maven](https://maven.apache.org/)
+- **Eclipse IDE for Java EE:** [Download Eclipse](https://www.eclipse.org/downloads/)
 
-### deployNoPull.sh
-
-Deploy the production version without pulling new changes.
-
-### deploy.sh
-
-Deploy the production instance after pulling the latest changes.
-
-### kcadm.sh
-
-Helper script to run the keycloak CLI in the keycloak container
-
-### mergeBackToDevelop.sh
-
-Helper script to create a merge request to merge back changes from the release branch to the develop branch.
-
-### update-types.sh
-
-Update the openapi json file as well as the typescript types derived from it.
-
-### version.sh
-
-Create env vars with version info.
-
-## Development
-
-### Required tools
-
-- A postgres installation `sudo apt install postgresql`
-- The GDAL GIS tools `sudo apt install gdal-bin`
-
-### Setup the DB
-
-Set up the database and the user:
+### Database Setup
 
 ```shell
 createuser diwi
@@ -65,121 +51,63 @@ psql -c "ALTER USER \"diwi\" WITH PASSWORD 'diwi'"
 createdb diwi -O diwi
 ```
 
-Start the backend (all the tables will be created through migration scripts). You can do this with the following command:
+### Start Backend & Keycloak
 
 ```shell
 ./deploy.backend.dev.sh
 ```
 
-### Recreating the database
+- This starts the backend and a local Keycloak instance.
+- All tables are created via migration scripts.
 
-First drop the database. For this you need to stop the backend and close any existing connections to the database.
-
-```shell
-dropdb diwi
-```
-
-Then you can execute the steps in [the setup chapter](#setup-the-db).
-
-### Resetting the keycloak database
-
-First remove the data/keycloak directory.
-
-```shell
-sudo rm -r data/keycloak
-```
-
-Then add the user(s) again using the addUsers.sh script. You only have to do this once.
+### Add Admin User
 
 ```shell
 ./addUsers.sh
 ```
 
-### Mailhog settings (with keycloak)
+- Adds an admin user and assigns the DIWI admin role.
 
-We use mailhog for testing on local, by default you can access it on http://localhost:8025
-
-1. Start keycloak locally (use the ./deploy.backend.dev.sh or ./deploy.keycloak.dev.sh)
-2. Navigate and login on localhost:keycloakport (default: http://localhost:1780)
-3. Select the correct realm (default: diwi-test-realm)
-4. In nav bar on the left select 'Realm settings'
-5. Select the tab 'Email' at the top.
-6. Validate that the following settings are present:
-
-```
-Template
-> from: mailhog@phinion.com
-Connection & Authentication
-> host: localhost
-> port: 1025
-```
-
-Optionally you can 'Test connection' if the current logged in user has an email set.
-
-### Front end development
-
-You can start the back end and keycloak using docker.
-
-First login to git.phinion.com if needed. You need an access token with `read_registry` permissions. You only need to do this once.
-
-```shell
-docker login git.phinion.com
-```
-
-Then start the backend and keycloak:
-
-```shell
-./deploy.backend.dev.sh
-```
-
-Create a user with the username and password 'admin' in keycloak:
-
-```
-./addUsers.sh
-```
-
-Start the front end in a dev server as follows:
+### Start Frontend
 
 ```shell
 cd frontend
-yarn && yarn start
+npm install
+npm start
 ```
 
-You shouldn't need any settings in the .env file other than `DIWI_DB_USERNAME` and `DIWI_DB_PASSWORD`. See `.env.backend.dev.example`.
+- Only `DIWI_DB_USERNAME` and `DIWI_DB_PASSWORD` are needed in `.env`. See `.env.backend.dev.example`.
 
-### Generate types from backend api
+### Mailhog (Email Testing)
 
-You can generate typescript types matching the API with the following script:
+- Mailhog runs by default at [http://localhost:8025](http://localhost:8025).
+- Configure Keycloak email settings as:
+  - From: `mailhog@phinion.com`
+  - Host: `localhost`
+  - Port: `1025`
 
-```bash
-./update-types.sh
-```
+---
 
-This will update [openapi.json](./api/openapi.json) and [schema.d.ts](./frontend/src/types/schema.d.ts).
+## Development Scripts
 
-You can use the types in typescript as follows:
+| Script                   | Description                                       |
+| ------------------------ | ------------------------------------------------- |
+| `addUsers.sh`            | Adds admin user to Keycloak and assigns DIWI role |
+| `compose.dev.sh`         | Helper for running Docker Compose files           |
+| `deploy.backend.dev.sh`  | Runs backend with external DB and local Keycloak  |
+| `deploy.keycloak.dev.sh` | Starts Keycloak in Docker                         |
+| `deployNoPull.sh`        | Deploys production without pulling new changes    |
+| `deploy.sh`              | Deploys production after pulling latest changes   |
+| `kcadm.sh`               | Runs Keycloak CLI in container                    |
+| `mergeBackToDevelop.sh`  | Creates merge request from release to develop     |
+| `update-types.sh`        | Updates OpenAPI JSON and TypeScript types         |
+| `version.sh`             | Creates env vars with version info                |
 
-```Typescript
-import { components } from "../types/schema";
+---
 
-// Directly using it is a bit cumbersome so it is a good idea to use type aliases
-export type CategoryType = components["schemas"]["SelectDisabledModel"];
-```
+## Backend Development
 
-You can use Typescript utility types if you want to derive another type from an API type. e.g. if want to remove the id:
-
-```Typescript
-export type Project = components["schemas"]["ProjectSnapshotModel"];
-export type ProjectWithoutId Omit<Project, "projectId">
-```
-
-If some values values seem optional in the openapi definition, but they are not, You need to add the `@JsonProperty(required = true)` annotation in the java model.
-
-### Setup Backend development
-
-#### Setup test DB
-
-The tests expect a db called diwi_test owned by the diwi user
+### Test Database Setup
 
 ```shell
 dropdb diwi_test # Optional when database already exists
@@ -189,118 +117,55 @@ createdb diwi_test -O diwi
 psql -d diwi_test -c 'ALTER SCHEMA "public" OWNER TO "diwi"'
 ```
 
-#### Install Eclipse for java EE
+### Eclipse & Lombok
 
-- Download the installer (https://www.eclipse.org/downloads/)
-- Extract the installer
-- Run `eclipse-inst`
-- Choose 'Eclipse IDE for Enterprise Java and Web Developers'
-- Wait
-- Done
+- Install Eclipse IDE for Java EE.
+- Install Project Lombok:
+  ```shell
+  java -jar ~/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar
+  ```
+- Import backend as Maven project.
 
-#### Install Project Lombok
+### Running the Development Server
 
-- If you've already run maven, the lombok installer is in the repo. otherwise you can download lombok.jar from https://projectlombok.org/download.
-- Run the installer from the maven repo.
+- Configure Tomcat v10.1 in Eclipse.
+- Set application path to `/`.
+- Start the server from Eclipse.
 
+---
+
+## Generating API Types
+
+```shell
+./update-types.sh
 ```
 
-java -jar ~/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar
+- Updates `openapi.json` and `frontend/src/types/schema.d.ts`.
 
-```
+---
 
-- -or- from the downloaded file
+## Deployment on Production
 
-```
+1. Copy `.env.production.example` to `.env`.
+2. Set secure DB password and configure Keycloak/email in `.env`.
+3. Run:
+   ```shell
+   ./deploy.sh
+   ```
 
-java -jar ~/Downloads/lombok.jar
+---
 
-```
+## Querying Data
 
-- In the installer choose the eclipse folder. Which normally is something like: `~/eclipse/jee-2023-12/eclipse/`
-- Click install
-- Close the installer
+- **Current records:** `WHERE change_end_date IS NULL`
+- **Records at reference date:**
+  ```sql
+  WHERE change_start_date <= :reference_date AND (change_end_date IS NULL OR change_end_date > :reference_date)
+  ```
 
-#### Setup the eclipse workspace
-
-- Open eclipse and choose a workspace directory (e.g. the root folder of the repo. **Not** the `backend` directory.)
-- Import the project
-
-  - Open the import File → Import
-  - Select Maven → Existing Maven Projects
-  - Click Browse and select the backend directory
-  - Click Finish
-
-#### Setup the development server
-
-- In the servers view(the servers view is located by default next to the console at the bottom of the window), select 'Click this link to create a new one'
-- Select tomcat v10.1 (Or look at the docker compose file for the current version)
-- In the next window select download and install. Create a new dir somewhere outside the project directory. Eclipse will download the server in the background so it will take some time for the 'next' button to be activated.
-- In the next window, move the backend to the configured side.
-- Double click the server in the servers view. This opens the run configuration. (You can also go here from the dropdown next to the play button in the toolbar.)
-- Click the modules tab at the bottom of the run configuration.
-- Set the path of the application to / by clicking the edit button and changing `/diwi` to `/`.
-- Click the play button in the servers view to start the server.
-
-### HTTP API guidelines
-
-We use the following query parameters for paginated queries:
-
-- pageNumber (1 based)
-- pageSize (must be larger than 0)
-
-We use the following query parameters for sorting
-
-- sortColumn
-- sortDirection (ASC or DESC)
-
-We use the following for filterings:
-
-- filterColumn
-- filterValue (This can be a list: filterValue=a&filterValue=b&filterValue=c)
-- filterCondition
-
-Also see FilterPaginationSorting.java
-
-### How to query the tables for a specific 'peildatum'/reference date
-
-For querying for the current date you can just check if the end date of the table is `NULL`. e.g:
-
-```sql
-SELECT
-    *
-FROM
-    diwi_testset_simplified.gemeente_state gs
-WHERE
-    gs.change_end_date IS NULL
-```
-
-For a specific date the query is more complex. There can not be any overlapping state/changelog entries:
-
-```sql
-SELECT
-    *
-FROM
-    diwi_testset_simplified.gemeente_state gs
-WHERE
-    gs.change_start_date <= :reference_date AND (gs.change_end_date IS NULL OR gs.change_end_date > :reference_date)
-```
-
-### Calling the backend from the front end
-
-To make sure we don't get redirect responses when we do `fetch` requests we need to use the wrapper `diwiFetch` from `src/utils/request.ts`.
-
-## Deploy on production
-
-- Copy `.env.production.example` to `.env`
-- Set a secure password for the database in the .env file
-- Configure keycloak with a new client and enter the parameters in the .env file
-- Enter the parameters for the email server in the .env file
-- Call `./deploy.sh`
+---
 
 ## Glossary
-
-As the project is meant for Dutch municipalities there are lots of Dutch terms.
 
 | Dutch       | English        |
 | ----------- | -------------- |
@@ -311,3 +176,5 @@ As the project is meant for Dutch municipalities there are lots of Dutch terms.
 | Eigenaar    | Owner          |
 | Beleidsdoel | Policy goal    |
 | Perceel     | Plot           |
+
+---
