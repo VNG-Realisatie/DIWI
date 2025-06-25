@@ -2585,6 +2585,12 @@
             "items": {
               "type": "string"
             }
+          },
+          "defaultValue": {
+            "type": "object"
+          },
+          "joinString": {
+            "type": "string"
           }
         }
       },

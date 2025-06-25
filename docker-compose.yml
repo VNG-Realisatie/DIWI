@@ -59,7 +59,7 @@ services:
       - database
 
   database:
-    image: git.phinion.com/vng/dependency_proxy/containers/postgres:15
+    image: postgres:15
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DIWI_DB_NAME:-diwi}

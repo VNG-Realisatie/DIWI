@@ -397,6 +397,8 @@ export interface components {
             mandatory?: boolean;
             singleSelect?: boolean;
             options?: string[];
+            defaultValue?: Record<string, never>;
+            joinString?: string;
         };
         GeographyOptionModel: {
             brkGemeenteCode?: string;
