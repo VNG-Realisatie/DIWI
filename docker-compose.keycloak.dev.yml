@@ -39,7 +39,7 @@ services:
       - ./data/keycloak:/data
 
   keycloak_database:
-    image: git.phinion.com/phinion/dependency_proxy/containers/postgres:15
+    image: postgres:15
     user: ${UID}
     network_mode: host
     environment:
@@ -58,4 +58,3 @@ services:
   mail:
     image: mailhog/mailhog
     network_mode: host
-

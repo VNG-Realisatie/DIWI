@@ -2,9 +2,6 @@
   "name": "vng",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://git.phinion.com/vng/diwi.git",
-  "author": "Emiel Rombouts <erombouts@phinion.com>",
-  "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.44.0",
     "@types/node": "^22.3.0",

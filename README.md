@@ -1,59 +1,92 @@
-# vng
+# VNG - DIWI
 
-## Script
+**DIWI** is a platform designed for Dutch municipalities, providing tools for data management and analysis. This document describes how to set up a development environment and deploy an instance of DIWI on a virtual machine (VM).
 
-A description of the scripts in the project
+- [VNG - DIWI](#vng---diwi)
+  - [Architecture](#architecture)
+  - [Tools Used](#tools-used)
+  - [Getting Started: Development Environment](#getting-started-development-environment)
+    - [Prerequisites](#prerequisites)
+      - [Optional](#optional)
+    - [Git Hooks Setup](#git-hooks-setup)
+    - [Setup the DB](#setup-the-db)
+    - [Start Backend \& Keycloak](#start-backend--keycloak)
+      - [Creating an admin user](#creating-an-admin-user)
+    - [Recreating the database](#recreating-the-database)
+    - [Resetting the keycloak database](#resetting-the-keycloak-database)
+    - [Start Frontend](#start-frontend)
+    - [Mailhog settings](#mailhog-settings)
+    - [Generate types from backend api](#generate-types-from-backend-api)
+    - [Setup Backend development](#setup-backend-development)
+      - [Setup test DB](#setup-test-db)
+    - [Back end development](#back-end-development)
+    - [Back end development with eclipse](#back-end-development-with-eclipse)
+      - [Install Eclipse for java EE](#install-eclipse-for-java-ee)
+      - [Install Project Lombok](#install-project-lombok)
+      - [Setup the eclipse workspace](#setup-the-eclipse-workspace)
+      - [Setup the development server](#setup-the-development-server)
+    - [HTTP API guidelines](#http-api-guidelines)
+    - [How to query the tables for a specific 'peildatum'/reference date](#how-to-query-the-tables-for-a-specific-peildatumreference-date)
+  - [Generating API Types](#generating-api-types)
+  - [Deployment on Production](#deployment-on-production)
+  - [Scripts](#scripts)
+  - [Glossary](#glossary)
 
-### addUsers.sh
+## Architecture
 
-Add an admin user to the local development keycloak instance, it will also create a diwi admin role and assign it to the admin user.
+- **Backend:** Java, connects to a PostgreSQL database.
+- **Frontend:** React (TypeScript) with Vitejs.
+- **Authentication:** Keycloak (Dockerized).
+- **Email Testing:** Mailhog (Dockerized).
+- **Database:** PostgreSQL.
+- **Containerization:** Docker & Docker Compose for local development and deployment.
 
-### compose.dev.sh
+## Tools Used
 
-Helper script to run one of the compose files in the project
+| Tool           | Purpose                       |
+| -------------- | ----------------------------- |
+| Docker         | Containerization              |
+| Docker Compose | Multi-container orchestration |
+| PostgreSQL     | Database                      |
+| Keycloak       | Authentication                |
+| Mailhog        | Email testing (local)         |
+| Node.js/NPM    | Frontend development          |
+| Java (Maven)   | Backend development           |
+| GDAL           | GIS tools                     |
 
-### deploy.backend.dev.sh
+## Getting Started: Development Environment
 
-Run the backend against a database outside of docker.
+### Prerequisites
 
-Start a local keycloak instance as well.
+- **PostgreSQL:** `sudo apt install postgresql`
+- **GDAL:** `sudo apt install gdal-bin`
+- **Docker & Docker Compose:** [Install Docker](https://docs.docker.com/get-docker/)
+- **Node.js & NPM:** [Install Node.js](https://nodejs.org/)
+- **Java 17+ & Maven:** [Install Java](https://adoptium.net/) and [Maven](https://maven.apache.org/)
 
-Shouldn't require any extra configuration by default, but does require a diwi database to be present.
+#### Optional
 
-### deploy.keycloak.dev.sh
+- **Eclipse IDE for Java EE:** [Download Eclipse](https://www.eclipse.org/downloads/)
+- [pre-commit](#git-hooks-setup) for git hooks
 
-Starts a keycloak instance in a docker container
+### Git Hooks Setup
 
-### deployNoPull.sh
+Before starting development, you must set up the Git pre-commit hook. This is recommended to maintain consistent code formatting across the project and only needs to be done once per clone of the repository.
 
-Deploy the production version without pulling new changes.
+We use the [pre-commit](https://pre-commit.com/index.html) framework for the hooks.
 
-### deploy.sh
+You can install it using [pipx](https://pipx.pypa.io/stable/)
 
-Deploy the production instance after pulling the latest changes.
+```shell
+pipx install pre-commit
+pre-commit-install
+```
 
-### kcadm.sh
+[uv](https://docs.astral.sh/uv/)
 
-Helper script to run the keycloak CLI in the keycloak container
-
-### mergeBackToDevelop.sh
-
-Helper script to create a merge request to merge back changes from the release branch to the develop branch.
-
-### update-types.sh
-
-Update the openapi json file as well as the typescript types derived from it.
-
-### version.sh
-
-Create env vars with version info.
-
-## Development
-
-### Required tools
-
-- A postgres installation `sudo apt install postgresql`
-- The GDAL GIS tools `sudo apt install gdal-bin`
+```shell
+uvx pre-commit isntall
+```
 
 ### Setup the DB
 
@@ -65,13 +98,35 @@ psql -c "ALTER USER \"diwi\" WITH PASSWORD 'diwi'"
 createdb diwi -O diwi
 ```
 
-Start the backend (all the tables will be created through migration scripts). You can do this with the following command:
+### Start Backend & Keycloak
+
+You can start the back end and keycloak using docker.
 
 ```shell
 ./deploy.backend.dev.sh
 ```
 
+- This starts the backend and a local Keycloak instance.
+- All tables are created via migration scripts.
+- (Optional) You can change the config in `.env`. See `.env.backend.dev.example`.
+
+You can run only the supporting services if needed. e.g. if you want run the backend in [eclipse](#back-end-development)
+
+```shell
+./deploy.keycloak.dev.sh
+```
+
+#### Creating an admin user
+
+After starting keycloak for the first time you need to create an admin user once. The username is admin and the password is admin.
+
+```shell
+./addUsers.sh
+```
+
 ### Recreating the database
+
+In case you want to start with a clean slate.
 
 First drop the database. For this you need to stop the backend and close any existing connections to the database.
 
@@ -83,69 +138,31 @@ Then you can execute the steps in [the setup chapter](#setup-the-db).
 
 ### Resetting the keycloak database
 
-First remove the data/keycloak directory.
+First remove the data/keycloak directory. You might want to clear the main data base as well. See [Recreating the database](#recreating-the-database). As the keycloak user id's are stored in the main database too.
 
 ```shell
 sudo rm -r data/keycloak
 ```
 
-Then add the user(s) again using the addUsers.sh script. You only have to do this once.
+Then add the user(s) again using the addUsers.sh script. See [Creating an admin user](#creating-an-admin-user)
 
-```shell
-./addUsers.sh
-```
-
-### Mailhog settings (with keycloak)
-
-We use mailhog for testing on local, by default you can access it on http://localhost:8025
-
-1. Start keycloak locally (use the ./deploy.backend.dev.sh or ./deploy.keycloak.dev.sh)
-2. Navigate and login on localhost:keycloakport (default: http://localhost:1780)
-3. Select the correct realm (default: diwi-test-realm)
-4. In nav bar on the left select 'Realm settings'
-5. Select the tab 'Email' at the top.
-6. Validate that the following settings are present:
-
-```
-Template
-> from: mailhog@phinion.com
-Connection & Authentication
-> host: localhost
-> port: 1025
-```
-
-Optionally you can 'Test connection' if the current logged in user has an email set.
-
-### Front end development
-
-You can start the back end and keycloak using docker.
-
-First login to git.phinion.com if needed. You need an access token with `read_registry` permissions. You only need to do this once.
-
-```shell
-docker login git.phinion.com
-```
-
-Then start the backend and keycloak:
-
-```shell
-./deploy.backend.dev.sh
-```
-
-Create a user with the username and password 'admin' in keycloak:
-
-```
-./addUsers.sh
-```
-
-Start the front end in a dev server as follows:
+### Start Frontend
 
 ```shell
 cd frontend
 yarn && yarn start
 ```
 
-You shouldn't need any settings in the .env file other than `DIWI_DB_USERNAME` and `DIWI_DB_PASSWORD`. See `.env.backend.dev.example`.
+### Mailhog settings
+
+You only need this for keycloak and when developing in eclipse. The back-end is automatically configured correctly when running in docker.
+
+- Mailhog runs by default at [http://localhost:8025](http://localhost:8025).
+- Configure Keycloak email settings as:
+  - From: `mailhog@phinion.com`
+  - Host: `localhost`
+  - Port: `1025`
+  - We use mailhog for testing when developing. By default you can access it on http://localhost:8025.
 
 ### Generate types from backend api
 
@@ -189,6 +206,16 @@ createdb diwi_test -O diwi
 psql -d diwi_test -c 'ALTER SCHEMA "public" OWNER TO "diwi"'
 ```
 
+### Back end development
+
+The back-end is written in Java EE that runs in a tomcat container. You can run the back-end and the supporting service using a docker compose file. See [Start the back-end development environment in docker](#start-the-back-end-development-environment-in-docker).
+
+When that is running you can use any editor to edit the back-end and docker compose watch mode will update the running code automatically.
+
+### Back end development with eclipse
+
+If you want to develop using eclipse you can use the following steps to set it up.
+
 #### Install Eclipse for java EE
 
 - Download the installer (https://www.eclipse.org/downloads/)
@@ -203,18 +230,14 @@ psql -d diwi_test -c 'ALTER SCHEMA "public" OWNER TO "diwi"'
 - If you've already run maven, the lombok installer is in the repo. otherwise you can download lombok.jar from https://projectlombok.org/download.
 - Run the installer from the maven repo.
 
-```
-
+```shell
 java -jar ~/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar
-
 ```
 
 - -or- from the downloaded file
 
-```
-
+```shell
 java -jar ~/Downloads/lombok.jar
-
 ```
 
 - In the installer choose the eclipse folder. Which normally is something like: `~/eclipse/jee-2023-12/eclipse/`
@@ -286,21 +309,47 @@ WHERE
     gs.change_start_date <= :reference_date AND (gs.change_end_date IS NULL OR gs.change_end_date > :reference_date)
 ```
 
-### Calling the backend from the front end
+## Generating API Types
 
-To make sure we don't get redirect responses when we do `fetch` requests we need to use the wrapper `diwiFetch` from `src/utils/request.ts`.
+```shell
+./update-types.sh
+```
 
-## Deploy on production
+- Updates `openapi.json` and `frontend/src/types/schema.d.ts`.
 
-- Copy `.env.production.example` to `.env`
+---
+
+## Deployment on Production
+
+Deploying on production requires
+
+- Setting up a separate keycloak server that you can link to for authentication.
+- A reverse proxy for https termination.
+
+Do the following steps
+
+- Copy [`.env.production.example`](./.env.production.example) to `.env`
 - Set a secure password for the database in the .env file
 - Configure keycloak with a new client and enter the parameters in the .env file
 - Enter the parameters for the email server in the .env file
 - Call `./deploy.sh`
 
-## Glossary
+## Scripts
 
-As the project is meant for Dutch municipalities there are lots of Dutch terms.
+| Script                   | Description                                       |
+| ------------------------ | ------------------------------------------------- |
+| `addUsers.sh`            | Adds admin user to Keycloak and assigns DIWI role |
+| `compose.dev.sh`         | Helper for running Docker Compose files           |
+| `deploy.backend.dev.sh`  | Runs backend with external DB and local Keycloak  |
+| `deploy.keycloak.dev.sh` | Starts Keycloak in Docker                         |
+| `deployNoPull.sh`        | Deploys production without pulling new changes    |
+| `deploy.sh`              | Deploys production after pulling latest changes   |
+| `kcadm.sh`               | Runs Keycloak CLI in container                    |
+| `mergeBackToDevelop.sh`  | Creates merge request from release to develop     |
+| `update-types.sh`        | Updates OpenAPI JSON and TypeScript types         |
+| `version.sh`             | Creates env vars with version info                |
+
+## Glossary
 
 | Dutch       | English        |
 | ----------- | -------------- |
@@ -311,3 +360,5 @@ As the project is meant for Dutch municipalities there are lots of Dutch terms.
 | Eigenaar    | Owner          |
 | Beleidsdoel | Policy goal    |
 | Perceel     | Plot           |
+
+---

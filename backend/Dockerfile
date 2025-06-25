@@ -1,4 +1,4 @@
-FROM git.phinion.com/phinion/dependency_proxy/containers/maven:3.9-eclipse-temurin-17 AS build-backend
+FROM maven:3.9-eclipse-temurin-17 AS build-backend
 
 WORKDIR /src
 
