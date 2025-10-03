@@ -1,6 +1,6 @@
 | Eigenaar | Ingevuld door |
 | --- | --- |
-| Fysieke Leefomgeving | Jeroen Ruig |
+| Afdeling Fysieke Leefomgeving VNG | Jeroen Ruig, Mark Knops |
 <hr/>
 
 # VNG - DIWI
